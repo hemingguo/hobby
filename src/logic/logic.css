@@ -1,0 +1,81 @@
+
+
+.welcome-message {
+    font-size: 4em;
+    
+    font-weight: bold;
+    
+    text-align: center;
+    
+    margin-top: 10vh;
+
+    color: rgb(148, 235, 17);
+}
+
+.icon-container {
+    text-align: center;
+   
+    margin-top: 50px;/* 图标与文字之间的间距 */
+      
+    color:rgb(12, 171, 36);
+}
+
+.input-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.input-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.label-a {
+    margin-right: 40px;
+    font-size: 20px !important;
+    color: #ff8c00 !important;
+    font-weight: bold;
+}
+
+.label-p {
+    margin-right: 32px;
+    font-size: 20px !important;
+    color: #ff8c00 !important;
+    font-weight: bold;
+}
+
+.input {
+    width: 200px;
+    padding: 5px;
+    font-size: 1em;
+}
+
+.button-group {
+    display: flex;
+    justify-content: center;
+    margin-top: 50px;
+    /* 按钮与输入框之间的间距 */
+}
+
+.button {
+    padding: 10px 20px !important;
+    margin: 0 20px !important;
+    /* 按钮之间的间距 */
+}
+
+.button-login {
+    background-color: #2cc4f7 !important;
+   
+    color: white !important;
+    
+    
+}
+
+.button-register {
+    
+    color: black !important;
+  
+}

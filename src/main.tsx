@@ -1,10 +1,15 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
-import './index.css'
+import { FluentProvider, webLightTheme } from '@fluentui/react-components';
+import NavDrawerDefault from './App.tsx'
+
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <App />
+
+    <FluentProvider theme={webLightTheme}>
+      <NavDrawerDefault />
+    </FluentProvider>
+
   </React.StrictMode>,
 )
