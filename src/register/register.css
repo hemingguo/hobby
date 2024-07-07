@@ -1,12 +1,10 @@
-
-
 .welcome-message {
     font-size: 4em;
-    
+
     font-weight: bold;
-    
+
     text-align: center;
-    
+
     margin-top: 10vh;
 
     color: rgb(148, 235, 17);
@@ -14,10 +12,11 @@
 
 .icon-container {
     text-align: center;
-   
-    margin-top: 50px;/* 图标与文字之间的间距 */
-      
-    color:rgb(12, 171, 36);
+
+    margin-top: 50px;
+    /* 图标与文字之间的间距 */
+
+    color: rgb(12, 171, 36);
 }
 
 .input-container {
@@ -34,14 +33,14 @@
 }
 
 .label-a {
-    margin-right: 44px;
+    margin-right: 40px;
     font-size: 20px !important;
     color: #ff8c00 !important;
     font-weight: bold;
 }
 
 .label-p {
-    margin-right: 32px;
+    margin-right: 52px;
     font-size: 20px !important;
     color: #ff8c00 !important;
     font-weight: bold;
@@ -66,16 +65,16 @@
     /* 按钮之间的间距 */
 }
 
-.button-login {
+.button-register {
     background-color: #2cc4f7 !important;
-   
+
     color: white !important;
-    
-    
+
+
 }
 
-.button-register {
-    
+.button-cancel {
+
     color: black !important;
-  
+
 }

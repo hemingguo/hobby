@@ -1,0 +1,45 @@
+.container {
+    display: grid;
+    grid-template-areas:
+        "image title"
+        "image table";
+    grid-template-columns: auto 1fr;
+    gap: 10px;
+    /* 调整图片、标题和表格之间的间距 */
+    align-items: start;
+    justify-items: start;
+    width: 100%;
+}
+
+.image {
+    grid-area: image;
+    margin-left: 10px;
+    align-self: center;
+    /* 图片在标题左边偏下 */
+}
+
+.title {
+    grid-area: title;
+    font-size: 2em;
+    font-weight: bold;
+    color: rgb(148, 235, 17);
+    align-self: start;
+}
+
+.table {
+    grid-area: table;
+    margin-top: 20px;
+    /* 调整表格与标题之间的间距 */
+    text-align: left;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,td {
+    border: 1px solid rgb(152, 55, 55) !important;
+    padding: 8px;
+    text-align: left;
+}

@@ -1,6 +1,8 @@
 
 import * as React from "react"
 
+import Per from './personal/personal_app.tsx'
+
 import {
   NavDivider,
   NavDrawer,
@@ -133,6 +135,7 @@ const NavDrawerDefault = (props: Partial<NavDrawerProps>) => {
 
   return (
     <div className={styles.root}>
+
       <NavDrawer
         className={styles.navDrawer}
         defaultSelectedValue="1"
@@ -172,6 +175,7 @@ const NavDrawerDefault = (props: Partial<NavDrawerProps>) => {
 
             <DialogSurface>
 
+
               <DialogBody>
                 <DialogTitle>Confirm Sign Out</DialogTitle>
                 <DialogContent>Are you sure you want to sign out?</DialogContent>
@@ -191,17 +195,17 @@ const NavDrawerDefault = (props: Partial<NavDrawerProps>) => {
 
       </NavDrawer>
 
-      <div className={styles.content}>
-        {!isOpen && renderHamburgerWithToolTip()}
+      <div >
+        
+        {renderHamburgerWithToolTip()}
 
-        <div className={styles.field}>
-
-
-
-
-        </div>
+        <Per />
+         
+        
 
       </div>
+
+
     </div>
   );
 };

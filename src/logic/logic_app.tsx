@@ -14,9 +14,12 @@ import {
 const Welcome = () => {
 
     const handleSignIn = () => {
-        window.location.href = '../../index.html'; // 跳转到指定页面
+        window.location.href = '../../index.html'; // 跳转到主页
     };
 
+    const handleSignUp = () => {
+        window.location.href = '../register/register.html'; // 跳转到注册页面
+    };
 
     return (<>
         <div className="welcome-message">
@@ -38,7 +41,7 @@ const Welcome = () => {
         </div>
         <div className="button-group">
             <Button className="button button-login" onClick={handleSignIn} shape="circular">Sign in</Button>
-            <Button className="button button-register" shape="circular">Sign up</Button>
+            <Button className="button button-register" onClick={handleSignUp} shape="circular">Sign up</Button>
         </div>
 
 
