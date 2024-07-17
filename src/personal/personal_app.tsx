@@ -2,6 +2,8 @@ import * as React from "react";
 import { Image, makeStyles } from "@fluentui/react-components";
 import { Card, CardHeader, CardPreview, CardFooter, Body1, Caption1, Button } from "@fluentui/react-components";
 import { ArrowReplyRegular, ShareRegular } from "@fluentui/react-icons";
+import { List, ListItem } from "@fluentui/react-list-preview";
+import Hobby_table from './hobby_table.tsx'
 
 const useStyles = makeStyles({
     container: {
@@ -69,10 +71,17 @@ const useStyles = makeStyles({
         left: "50%",
         transform: "translate(-60%, -60%) rotate(-45deg)", // 调整十字中心位置
     },
-    card: {
-        
-        marginLeft: "50px", // 保持与表格对齐
+
+    
+
+    hobbyTable: {
+        position: "absolute",
+        left: "150px",
+        marginTop: "20px",
+        width: "800px",
     },
+
+    
 });
 
 const Per = () => {
@@ -124,37 +133,18 @@ const Per = () => {
 
                     </div>
 
-                    <div className={classes.card}>
-                        <Card>
-                            <CardHeader
-                              
-                                header={
-                                    <Body1>
-                                        <b>Elvia Atkins</b> mentioned you
-                                    </Body1>
-                                }
-                                description={<Caption1>5h ago · About us - Overview</Caption1>}
-                            />
-                            <CardPreview
-                                
-                            >
-                                <img
-                                    src="../../image/white.jpg" 
-                                    style={{ width: "100px", height: "100px" }} // 调整大小
-                                />
-                            </CardPreview>
-                            <CardFooter>
-                                <Button icon={<ArrowReplyRegular fontSize={16} />}>Reply</Button>
-                                <Button icon={<ShareRegular fontSize={16} />}>Share</Button>
-                            </CardFooter>
-                        </Card>
+                    <div className={classes.hobbyTable}>
+                    <Hobby_table />
                     </div>
+
+                  
+
                 </>
 
 
-            // 以上为渲染个人主页部分
+                // 以上为渲染个人主页部分
             ) : (
-            // 以下为渲染发表帖子部分
+                // 以下为渲染发表帖子部分
 
                 <div className={classes.title}>
                     ~~~~ Primary School ~~~~

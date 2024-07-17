@@ -2,6 +2,8 @@
 import * as React from "react"
 
 import Per from './personal/personal_app.tsx'
+import Squ from './square/square_app.tsx'
+
 
 import {
   NavDivider,
@@ -110,15 +112,17 @@ const Square = bundleIcon(LeafTwo32Filled, LeafTwo32Regular);
 
 
 const NavDrawerDefault = (props: Partial<NavDrawerProps>) => {
-  
-  const styles = useStyles();
 
+  const styles = useStyles();
+  const [page, setPage] = React.useState(1);
   const [isOpen, setIsOpen] = React.useState(false);
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
 
   const handleSignOut = () => {
     window.location.href = "/src/logic/logic.html";
   };
+
+
 
   const renderHamburgerWithToolTip = () => {
     return (
@@ -150,11 +154,11 @@ const NavDrawerDefault = (props: Partial<NavDrawerProps>) => {
 
         <NavDrawerBody>
 
-          <NavItem icon={<Personal />} value="1" className={styles.navItemText}>
+          <NavItem onClick={() => setPage(1)} icon={<Personal />} value="1" className={styles.navItemText}>
             Personal Page
           </NavItem>
 
-          <NavItem icon={<Square />} value="2" className={styles.navItemText}>
+          <NavItem onClick={() => setPage(2)} icon={<Square />} value="2" className={styles.navItemText}>
             Hobby Square
           </NavItem>
 
@@ -196,12 +200,12 @@ const NavDrawerDefault = (props: Partial<NavDrawerProps>) => {
       </NavDrawer>
 
       <div >
-        
+
         {renderHamburgerWithToolTip()}
 
-        <Per />
-         
-        
+        {page === 1 && <Per />}
+        {page === 2 && <Squ />}
+
 
       </div>
 
