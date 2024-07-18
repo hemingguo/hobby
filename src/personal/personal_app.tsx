@@ -1,9 +1,11 @@
 import * as React from "react";
-import { Image, makeStyles } from "@fluentui/react-components";
+import { Image, makeStyles, InfoLabel, InfoLabelProps, Link } from "@fluentui/react-components";
 import { Card, CardHeader, CardPreview, CardFooter, Body1, Caption1, Button } from "@fluentui/react-components";
 import { ArrowReplyRegular, ShareRegular } from "@fluentui/react-icons";
 import { List, ListItem } from "@fluentui/react-list-preview";
 import Hobby_table from './hobby_table.tsx'
+import Pos from './post.tsx'
+
 
 const useStyles = makeStyles({
     container: {
@@ -52,28 +54,31 @@ const useStyles = makeStyles({
         color: "#7579eb", // 设置字体颜色为淡蓝色
     },
     diamondButton: {
-        position: "absolute",
-        left: "1000px",
-        width: "40px",
-        height: "40px",
-        backgroundColor: "#7579eb",
+       
         transform: "rotate(45deg)",
+        position: "fixed",
+        top: "55px",
+        right: "70px",
+        width: "45px",
+        height: "45px",
+        borderRadius: "50%",
+        backgroundColor: "#f7c0e3",
+        
         display: "flex",
-        justifyContent: "center",
         alignItems: "center",
-        color: "white",
+        justifyContent: "center",
+        border: "none",
         cursor: "pointer",
+        boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
     },
     diamondButtonText: {
+        color: "#ff8c00",
         position: "absolute",
-        fontSize: "28px",
+        fontSize: "38px",
         top: "50%",
-        left: "50%",
-        transform: "translate(-60%, -60%) rotate(-45deg)", // 调整十字中心位置
+        left: "52%",
+        transform: "translate(-66%, -68%) rotate(-45deg)", // 调整十字中心位置
     },
-
-    
-
     hobbyTable: {
         position: "absolute",
         left: "150px",
@@ -81,7 +86,7 @@ const useStyles = makeStyles({
         width: "800px",
     },
 
-    
+
 });
 
 const Per = () => {
@@ -112,9 +117,17 @@ const Per = () => {
                             <table className={classes.tableElement}>
                                 <thead>
                                     <tr>
-                                        <th className={`${classes.tableCell2} ${classes.headerCell}`}>Num of Pos</th>
-                                        <th className={`${classes.tableCell2} ${classes.headerCell}`}>Num of Grp</th>
-                                        <th className={`${classes.tableCell2} ${classes.headerCell}`}>Num of Likes</th>
+                                        <th className={`${classes.tableCell2} ${classes.headerCell}`}>Posts</th>
+                                        <th className={`${classes.tableCell2} ${classes.headerCell}`}>Groups</th>
+                                        <th className={`${classes.tableCell2} ${classes.headerCell}`}>Likes<InfoLabel size="small"
+                                            info={
+                                                <>
+                                                    It shows how many likes your posts have received.
+                                                </>
+                                            }
+
+                                        >
+                                        </InfoLabel></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -134,21 +147,17 @@ const Per = () => {
                     </div>
 
                     <div className={classes.hobbyTable}>
-                    <Hobby_table />
+                        <Hobby_table />
                     </div>
 
-                  
-
                 </>
-
 
                 // 以上为渲染个人主页部分
             ) : (
                 // 以下为渲染发表帖子部分
 
-                <div className={classes.title}>
-                    ~~~~ Primary School ~~~~
-                </div>
+                <Pos />
+
             )}
         </div>
     );
