@@ -1,12 +1,24 @@
 import {
+    Select,
     makeStyles,
     Field,
+    Dialog,
+    DialogTrigger,
+    DialogSurface,
+    DialogTitle,
+    DialogBody,
+    DialogActions,
+    DialogContent,
+    Button,
 } from "@fluentui/react-components";
+
 import * as React from "react";
 import {
     Status20Filled,
     ArrowReply28Filled,
 } from "@fluentui/react-icons";
+import { classNames } from "@fluentui/react/lib/components/Icon/Icon.styles";
+
 
 const useStyles = makeStyles({
     title: {
@@ -41,13 +53,29 @@ const useStyles = makeStyles({
         display: "flex",
         alignItems: "center", // 使图标和文本垂直居中对齐
     },
+    sign: {
+        color: "#7AC5CD",
+        fontWeight: "400", // 半粗体
+        fontFamily: "Bahnschrift", // 设置字体为 Bahnschrift
+    },
+    confirm: {
+        color: "	#9ACD32",
+        fontWeight: "800", // 半粗体
+        fontFamily: "Bahnschrift", // 设置字体为 Bahnschrift
+    },
+    cancel: {
+        color: "grey",
+        fontWeight: "800", // 半粗体
+        fontFamily: "Bahnschrift", // 设置字体为 Bahnschrift
+    },
     icon: {
         marginRight: "8px", // 图标和文本之间的间距
     },
+
     roundButton: {
         position: "fixed",
         top: "55px",
-        right: "70px",
+        left: "1000px",
         width: "45px",
         height: "45px",
         borderRadius: "50%",
@@ -60,9 +88,10 @@ const useStyles = makeStyles({
         cursor: "pointer",
         boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
     },
+
     upLoadButton: {
         position: "absolute",
-        bottom: "70px",
+        bottom: "60px",
         left: "280px",
         backgroundColor: "#fbe8d3",
         color: "#f85f73",
@@ -73,10 +102,11 @@ const useStyles = makeStyles({
         boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
         fontWeight: "bold",
     },
+
     postButton: {
         position: "absolute",
-        bottom: "70px",
-        right: "305px",
+        bottom: "60px",
+        left: "750px",
         backgroundColor: "#fbe8d3",
         color: "#f85f73",
         border: "none",
@@ -86,32 +116,58 @@ const useStyles = makeStyles({
         boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
         fontWeight: "bold",
     },
+    fileInput: {
+        display: "none", // 隐藏文件选择器
+    },
+    select: {
+        color: "#8b00ff	",
+    },
+
 });
+
+
+
 
 const Pos = () => {
     const classes = useStyles();
 
+    const fileInputRef = React.useRef<HTMLInputElement>(null);
+
     const [value, setValue] = React.useState("");
 
+
+    // 处理返回按钮
     const handleButtonClick = () => {
         window.location.href = "/src/index.html";
     };
 
+    // 输入框限制字数
     const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         if (event.target.value.length <= 500) {
             setValue(event.target.value);
         }
     };
 
-    const handleUpload = () => {
-        // Add your submit logic here
-        alert("Upload: " + value);
-    };
 
-    const handlePost = () => {
-        // Add your submit logic here
-        alert("Post: " + value);
+
+
+    //-------------上传
+    const handleUploadClick = () => {
+
+        if (fileInputRef.current) {
+            fileInputRef.current.click(); // 触发文件选择器的点击事件
+        }
     };
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0]; // 添加空值检查
+        if (file) {
+            // Handle file upload logic here, e.g., display preview or upload to backend
+            alert("Selected file: " + file.name);
+        }
+    };
+    //------------
+
+
 
     return (
         <>
@@ -138,12 +194,62 @@ const Pos = () => {
                 </Field>
             </div>
 
-            <button className={classes.upLoadButton} onClick={handleUpload}>
+            {/* 隐藏文件选择器窗口 */}
+            <input
+                type="file"
+                ref={fileInputRef}
+                className={classes.fileInput}
+                onChange={handleFileChange}
+                accept="image/*" // 限制文件选择器仅显示图像文件
+            />
+
+            <button className={classes.upLoadButton} onClick={handleUploadClick}>
                 Upload
             </button>
-            <button className={classes.postButton} onClick={handlePost}>
-                Post
-            </button>
+
+
+            <Dialog>
+
+                <DialogTrigger disableButtonEnhancement>
+                    <button className={classes.postButton}>
+                        Post
+                    </button>
+                </DialogTrigger>
+
+
+                <DialogSurface>
+                    <DialogBody>
+
+                        <DialogTitle className={classes.select}>Select</DialogTitle>
+
+                        <DialogContent>
+                            <div className={classes.sign}>
+
+                                Which interest group do you want to send to?
+                            </div>
+                            <Select >
+                                <option>Red</option>
+                                <option>Green</option>
+                                <option>Blue</option>
+                            </Select>
+                        </DialogContent>
+
+
+                        <DialogActions>
+                            <DialogTrigger disableButtonEnhancement>
+                                <Button appearance="subtle"><text className={classes.confirm}>Confirm</text></Button>
+                            </DialogTrigger>
+                            <DialogTrigger disableButtonEnhancement>
+                                <Button appearance="subtle"><text className={classes.cancel}>Cancel</text></Button>
+                            </DialogTrigger>
+                        </DialogActions>
+
+
+                    </DialogBody>
+                </DialogSurface>
+
+
+            </Dialog>
         </>
     );
 };

@@ -54,16 +54,16 @@ const useStyles = makeStyles({
         color: "#7579eb", // 设置字体颜色为淡蓝色
     },
     diamondButton: {
-       
+
         transform: "rotate(45deg)",
         position: "fixed",
         top: "55px",
-        right: "70px",
+        left: "1000px",
         width: "45px",
         height: "45px",
         borderRadius: "50%",
         backgroundColor: "#f7c0e3",
-        
+
         display: "flex",
         alignItems: "center",
         justifyContent: "center",

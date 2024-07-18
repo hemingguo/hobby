@@ -132,8 +132,8 @@ const Hobby_table = () => {
                             {item.totalNumber.label}
                         </TableCell>
 
-                        <TableCell tabIndex={0} role="gridcell">  
-                                {item.activeNumber.label}
+                        <TableCell tabIndex={0} role="gridcell">
+                            {item.activeNumber.label}
                         </TableCell>
 
                         <TableCell role="gridcell" tabIndex={0} {...focusableGroupAttr}>
