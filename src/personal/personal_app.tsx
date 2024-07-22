@@ -1,3 +1,5 @@
+// 该文件为个人主页面
+
 import * as React from "react";
 import { Image, makeStyles, InfoLabel, InfoLabelProps, Link } from "@fluentui/react-components";
 import { Card, CardHeader, CardPreview, CardFooter, Body1, Caption1, Button } from "@fluentui/react-components";
@@ -75,6 +77,7 @@ const useStyles = makeStyles({
         color: "#ff8c00",
         position: "absolute",
         fontSize: "38px",
+        fontWeight: "600",
         top: "50%",
         left: "52%",
         transform: "translate(-66%, -68%) rotate(-45deg)", // 调整十字中心位置

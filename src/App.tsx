@@ -114,7 +114,7 @@ const Square = bundleIcon(LeafTwo32Filled, LeafTwo32Regular);
 const NavDrawerDefault = (props: Partial<NavDrawerProps>) => {
 
   const styles = useStyles();
-  const [page, setPage] = React.useState(1);
+  const [page, setPage] = React.useState(2);
   const [isOpen, setIsOpen] = React.useState(false);
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
 
@@ -142,7 +142,7 @@ const NavDrawerDefault = (props: Partial<NavDrawerProps>) => {
 
       <NavDrawer
         className={styles.navDrawer}
-        defaultSelectedValue="1"
+        defaultSelectedValue="2"
         open={isOpen}
 
       >

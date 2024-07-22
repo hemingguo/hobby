@@ -1,3 +1,5 @@
+// 该文件渲染已加入的兴趣圈列表
+
 import * as React from "react";
 import {
     FolderRegular,
@@ -24,6 +26,8 @@ import {
     useArrowNavigationGroup,
     useFocusableGroup,
 } from "@fluentui/react-components";
+import View from "./smallview";
+
 
 const items = [
     {
@@ -73,79 +77,87 @@ const columns = [
 ];
 
 const Hobby_table = () => {
+    const [value, setValue] = React.useState(1);
     const keyboardNavAttr = useArrowNavigationGroup({ axis: "grid" });
     const focusableGroupAttr = useFocusableGroup({
         tabBehavior: "limited-trap-focus",
     });
-
+    const handleJump = () => {
+        setValue(2);
+    }
     return (
-        <Table
-            {...keyboardNavAttr}
-            role="grid"
-            aria-label="Table with grid keyboard navigation"
-            style={{ minWidth: "620px" }}
-        >
-            <TableHeader>
-                <TableRow >
-                    <TableHeaderCell
-                        style={{ fontWeight: "bold", color: "#da3b01" }}
-                    >
-                        Joined & Created
-                    </TableHeaderCell>
-                </TableRow>
-                <TableRow appearance="brand">
-                    {columns.map((column) => (
-                        <TableHeaderCell key={column.columnKey}>
-                            {column.label}
-                        </TableHeaderCell>
-                    ))}
-                </TableRow>
-            </TableHeader>
-
-            <TableBody>
-                {items.map((item) => (
-                    <TableRow key={item.name.label}>
-
-                        <TableCell tabIndex={0} role="gridcell">
-                            <TableCellLayout media={item.name.icon}>
-                                {item.name.label}
-                            </TableCellLayout>
-                        </TableCell>
-
-                        <TableCell tabIndex={0} role="gridcell">
-                            <TableCellLayout
-                                media={
-                                    <Avatar
-                                        aria-label={item.creator.label}
-                                        name={item.creator.label}
-                                        badge={{
-                                            status: item.creator.status as PresenceBadgeStatus,
-                                        }}
-                                    />
-                                }
+        <>
+            {value === 1
+                ? <Table
+                    {...keyboardNavAttr}
+                    role="grid"
+                    aria-label="Table with grid keyboard navigation"
+                    style={{ minWidth: "620px" }}
+                >
+                    <TableHeader>
+                        <TableRow >
+                            <TableHeaderCell
+                                style={{ fontWeight: "bold", color: "#da3b01" }}
                             >
-                                {item.creator.label}
-                            </TableCellLayout>
-                        </TableCell>
+                                Joined & Created
+                            </TableHeaderCell>
+                        </TableRow>
+                        <TableRow appearance="brand">
+                            {columns.map((column) => (
+                                <TableHeaderCell key={column.columnKey}>
+                                    {column.label}
+                                </TableHeaderCell>
+                            ))}
+                        </TableRow>
+                    </TableHeader>
 
-                        <TableCell tabIndex={0} role="gridcell">
-                            {item.totalNumber.label}
-                        </TableCell>
+                    <TableBody>
+                        {items.map((item) => (
+                            <TableRow key={item.name.label}>
 
-                        <TableCell tabIndex={0} role="gridcell">
-                            {item.activeNumber.label}
-                        </TableCell>
+                                <TableCell tabIndex={0} role="gridcell">
+                                    <TableCellLayout media={item.name.icon}>
+                                        {item.name.label}
+                                    </TableCellLayout>
+                                </TableCell>
 
-                        <TableCell role="gridcell" tabIndex={0} {...focusableGroupAttr}>
-                            <TableCellLayout>
-                                <Button icon={<ArrowForwardRegular />} aria-label="Look" />
-                                <Button icon={<DeleteRegular />} aria-label="Delete" />
-                            </TableCellLayout>
-                        </TableCell>
-                    </TableRow>
-                ))}
-            </TableBody>
-        </Table>
+                                <TableCell tabIndex={0} role="gridcell">
+                                    <TableCellLayout
+                                        media={
+                                            <Avatar
+                                                aria-label={item.creator.label}
+                                                name={item.creator.label}
+                                                badge={{
+                                                    status: item.creator.status as PresenceBadgeStatus,
+                                                }}
+                                            />
+                                        }
+                                    >
+                                        {item.creator.label}
+                                    </TableCellLayout>
+                                </TableCell>
+
+                                <TableCell tabIndex={0} role="gridcell">
+                                    {item.totalNumber.label}
+                                </TableCell>
+
+                                <TableCell tabIndex={0} role="gridcell">
+                                    {item.activeNumber.label}
+                                </TableCell>
+
+                                <TableCell role="gridcell" tabIndex={0} {...focusableGroupAttr}>
+                                    <TableCellLayout>
+                                        <Button onClick={handleJump} icon={<ArrowForwardRegular />} aria-label="Look" />
+                                        <Button icon={<DeleteRegular />} aria-label="Delete" />
+                                    </TableCellLayout>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+                : <View onToggleView={() => setValue(1)} />
+            }
+        </>
     );
 };
 

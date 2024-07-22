@@ -1,3 +1,5 @@
+// 该文件渲染发帖子页面
+
 import {
     Select,
     makeStyles,
@@ -10,6 +12,9 @@ import {
     DialogActions,
     DialogContent,
     Button,
+    mergeClasses,
+    tokens,
+    useId,
 } from "@fluentui/react-components";
 
 import * as React from "react";
@@ -17,7 +22,7 @@ import {
     Status20Filled,
     ArrowReply28Filled,
 } from "@fluentui/react-icons";
-import { classNames } from "@fluentui/react/lib/components/Icon/Icon.styles";
+
 
 
 const useStyles = makeStyles({
@@ -119,10 +124,48 @@ const useStyles = makeStyles({
     fileInput: {
         display: "none", // 隐藏文件选择器
     },
-    select: {
+    ti: {
         color: "#8b00ff	",
+
+    },
+    select: {
+        color: "	#3CB371",
+        backgroundColor: "#FFF0F5",
+        border: "none",
+        padding: "10px",
+        borderRadius: "5px",
+        fontSize: "1em",
+        appearance: "none",
+        cursor: "pointer",
+        width: "100%",
+        outline: "none",
+
+
+    },
+    inselect: {
+        marginTop: "20px",
+        marginBottom: "50px",
+        border: "none",
+    },
+    
+    filledLighter: {
+        backgroundColor: "white",
+
     },
 
+    base: {
+        display: "flex",
+        flexDirection: "column",
+        maxWidth: "500px",
+    },
+
+    sfield: {
+
+        display: "grid",
+        gridRowGap: tokens.spacingVerticalXXS,
+        marginTop: tokens.spacingVerticalMNudge,
+        padding: `${tokens.spacingVerticalMNudge} ${tokens.spacingHorizontalMNudge}`,
+    },
 });
 
 
@@ -130,7 +173,7 @@ const useStyles = makeStyles({
 
 const Pos = () => {
     const classes = useStyles();
-
+    const selectId = useId();
     const fileInputRef = React.useRef<HTMLInputElement>(null);
 
     const [value, setValue] = React.useState("");
@@ -176,7 +219,7 @@ const Pos = () => {
             </button>
 
             <div className={classes.title}>
-                ~~ Post ~~
+                ~~ Share ~~
             </div>
 
             <div className={classes.field}>
@@ -220,18 +263,24 @@ const Pos = () => {
                 <DialogSurface>
                     <DialogBody>
 
-                        <DialogTitle className={classes.select}>Select</DialogTitle>
+                        <DialogTitle className={classes.ti}>Select</DialogTitle>
 
                         <DialogContent>
                             <div className={classes.sign}>
 
                                 Which interest group do you want to send to?
                             </div>
-                            <Select >
-                                <option>Red</option>
-                                <option>Green</option>
-                                <option>Blue</option>
-                            </Select>
+                            <div className={classes.inselect}>
+                                <div className={mergeClasses(classes.sfield, classes.filledLighter)}>
+
+                                    <Select id={`${selectId}-filledLighter`} appearance="filled-lighter">
+                                        <option>Red</option>
+                                        <option>Green</option>
+                                        <option>Blue</option>
+                                    </Select>
+                                </div>
+
+                            </div>
                         </DialogContent>
 
 

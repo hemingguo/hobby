@@ -1,3 +1,5 @@
+// 该文件渲染兴趣圈列表中具体的项
+
 import * as React from "react";
 
 import {
@@ -8,7 +10,7 @@ import {
 } from "@fluentui/react-components";
 
 import { 
-    ArrowSquareUpRightRegular,
+    
     SendRegular,
 } from "@fluentui/react-icons";
 
@@ -30,17 +32,26 @@ const useStyles = makeStyles({
         margin: "auto",
         width: "480px",
         maxWidth: "100%",
-        borderRadius: "15px", // 设置圆角
-        backgroundColor: "#fafafa", 
+        borderRadius: "15px ", // 设置圆角
+        backgroundColor: "#fafafa",
+        
     },
     describe:{
         marginLeft: "30px",
     },
 });
 
-const Hob = () => {
+
+interface HobProps {
+    onToggleView: () => void;
+}
+
+const Hob: React.FC<HobProps> = ({ onToggleView }) => {
     const styles = useStyles();
 
+    const handleClick = () => {
+        onToggleView();
+    };
     return (
         <Card className={styles.card}>
             <CardHeader
@@ -67,7 +78,7 @@ const Hob = () => {
 
             <CardFooter>
                 
-                <Button appearance="subtle"  icon={<SendRegular fontSize={16} />}>Look</Button>
+                <Button onClick={handleClick} appearance="subtle"  icon={<SendRegular fontSize={16} />}>Look</Button>
                
                 <Dia />
             </CardFooter>

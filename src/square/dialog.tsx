@@ -1,4 +1,4 @@
-import * as React from "react";
+// 该文件为加入某一兴趣圈的确认窗口
 import {
     Dialog,
     DialogTrigger,

@@ -1,3 +1,6 @@
+// 该文件渲染兴趣圈列表
+
+
 import { List, ListItem } from "@fluentui/react-list-preview";
 import * as React from "react";
 import Hob from './hobby.tsx';
@@ -19,6 +22,7 @@ const useStyles = makeStyles({
         width: "50%",
         boxSizing: "border-box",
         marginTop: "50px",
+        marginBottom: "10px",
     },
     list: {
         display: "flex",
@@ -29,7 +33,11 @@ const useStyles = makeStyles({
     
 });
 
-const HobG = () => {
+interface HobGProps {
+    onToggleView: () => void;
+}
+
+const HobG: React.FC<HobGProps> = ({ onToggleView }) => {
     const classes = useStyles();
 
     return (
@@ -39,7 +47,7 @@ const HobG = () => {
                     className={classes.card}
                     key={name}
                 >
-                    <Hob />
+                    <Hob onToggleView={onToggleView} />
 
                 </ListItem>
             ))}
