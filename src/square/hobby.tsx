@@ -9,8 +9,8 @@ import {
     Button,
 } from "@fluentui/react-components";
 
-import { 
-    
+import {
+
     SendRegular,
 } from "@fluentui/react-icons";
 
@@ -20,10 +20,11 @@ import {
     CardFooter,
     CardHeader,
     CardPreview,
-    
+
 } from "@fluentui/react-components";
 
 import Dia from './dialog.tsx';
+import { classNames } from "@fluentui/react/lib/components/Icon/Icon.styles";
 
 
 
@@ -34,11 +35,24 @@ const useStyles = makeStyles({
         maxWidth: "100%",
         borderRadius: "15px ", // 设置圆角
         backgroundColor: "#fafafa",
-        
+
     },
-    describe:{
-        marginLeft: "30px",
+    describe: {
+        fontFamily: "Bahnschrift", // 设置字体为 Bahnschrift
+        paddingLeft: "20px",
+
+        color: "grey"
     },
+    title: {
+
+        color: "#FFAA00"
+    },
+    des: {
+        fontFamily: "Bahnschrift", // 副标题设置字体为 Bahnschrift
+        color: "#756c83",
+
+    },
+
 });
 
 
@@ -64,10 +78,10 @@ const Hob: React.FC<HobProps> = ({ onToggleView }) => {
                 }
                 header={
                     <Body1>
-                        <b>Game</b> 
+                        <b className={styles.title}>Game</b>
                     </Body1>
                 }
-                description={<Caption1>Founded by hemingguo in 2024-7-17 </Caption1>}
+                description={<Caption1 className={styles.des}>Founded by hemingguo in 2024-7-17 </Caption1>}
             />
 
             <CardPreview >
@@ -77,9 +91,9 @@ const Hob: React.FC<HobProps> = ({ onToggleView }) => {
             </CardPreview>
 
             <CardFooter>
-                
-                <Button onClick={handleClick} appearance="subtle"  icon={<SendRegular fontSize={16} />}>Look</Button>
-               
+
+                <Button onClick={handleClick} appearance="subtle" icon={<SendRegular fontSize={16} />}>Look</Button>
+
                 <Dia />
             </CardFooter>
         </Card>

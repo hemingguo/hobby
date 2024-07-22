@@ -1,6 +1,6 @@
 // 该文件渲染兴趣广场的主页面，是跳转兴趣圈内部，创建新兴趣圈的入口
 
-
+import { useEffect } from "react";
 import * as React from "react";
 import { makeStyles } from "@fluentui/react-components";
 import HobG from './hobby_groups.tsx';
@@ -55,7 +55,12 @@ const Squ: React.FC = () => {
     const handleAddClick = () => {
         setIsPrimaryView(3);
     };
-
+    useEffect(() => {
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = 'auto';
+        };
+    }, []);
     const renderContent = () => {
         switch (isPrimaryView) {
             case 1:
@@ -68,6 +73,7 @@ const Squ: React.FC = () => {
                         <div className={classes.title}>
                             ~~ Hobby Square ~~
                         </div>
+
                         <div className={classes.hobby}>
                             <HobG onToggleView={() => setIsPrimaryView(2)} />
                         </div>
@@ -85,7 +91,7 @@ const Squ: React.FC = () => {
                         <AddGroup />
                     </>
                 );
-            
+
         }
     };
 

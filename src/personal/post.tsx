@@ -45,11 +45,7 @@ const useStyles = makeStyles({
         boxShadow: "none", // 确保对焦时没有阴影
         resize: "none", // 防止用户调整大小
     },
-    field: {
-        width: "500px",
-        marginLeft: "280px",
-        position: "relative", // 添加 position: relative 以使按钮位置基于此容器
-    },
+
     fieldLabel: {
         fontSize: "1.2em",
         color: "#8b00ff", // 紫色字体
@@ -147,7 +143,7 @@ const useStyles = makeStyles({
         marginBottom: "50px",
         border: "none",
     },
-    
+
     filledLighter: {
         backgroundColor: "white",
 
@@ -166,6 +162,40 @@ const useStyles = makeStyles({
         marginTop: tokens.spacingVerticalMNudge,
         padding: `${tokens.spacingVerticalMNudge} ${tokens.spacingHorizontalMNudge}`,
     },
+
+    uploadtext: {
+        color: "grey",
+        fontFamily: "Bahnschrift", // 设置字体为 Bahnschrift
+    },
+    field: {
+        width: "500px",
+        marginLeft: "280px",
+        position: "relative", // 添加 position: relative 以使按钮位置基于此容器
+    },
+    avatarContainer: {
+        position: "absolute",
+        right: "-300px", // 调整这个值以在右侧添加间距
+        top: "50%", // 使图片框垂直居中
+        transform: "translateY(-50%)", // 使图片框垂直居中
+    },
+    avatar: {
+        width: "200px",
+        height: "200px",
+        borderRadius: "10px",
+        backgroundColor: "white",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        overflow: "hidden",
+        marginLeft: "20px",
+    },
+    avatarImage: {
+        width: "100%",
+        height: "100%",
+        objectFit: "cover",
+
+    },
+
 });
 
 
@@ -175,7 +205,7 @@ const Pos = () => {
     const classes = useStyles();
     const selectId = useId();
     const fileInputRef = React.useRef<HTMLInputElement>(null);
-
+    const [avatar, setAvatar] = React.useState<string | null>(null);
     const [value, setValue] = React.useState("");
 
 
@@ -204,12 +234,18 @@ const Pos = () => {
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0]; // 添加空值检查
         if (file) {
-            // Handle file upload logic here, e.g., display preview or upload to backend
-            alert("Selected file: " + file.name);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setAvatar(reader.result as string);
+            };
+            reader.readAsDataURL(file);
         }
     };
     //------------
 
+    const handleConfirm = () => {
+        window.location.href = "/src/index.html";
+    }
 
 
     return (
@@ -234,8 +270,17 @@ const Pos = () => {
                         placeholder="Type here..."
                         className={classes.textarea}
                     />
+                    <div className={classes.avatarContainer}>
+                        <div className={classes.avatar}>
+                            {avatar ? (
+                                <img src={avatar} alt="Avatar" className={classes.avatarImage} />
+                            ) : null}
+                        </div>
+                    </div>
                 </Field>
             </div>
+
+
 
             {/* 隐藏文件选择器窗口 */}
             <input
@@ -286,7 +331,7 @@ const Pos = () => {
 
                         <DialogActions>
                             <DialogTrigger disableButtonEnhancement>
-                                <Button appearance="subtle"><text className={classes.confirm}>Confirm</text></Button>
+                                <Button onClick={handleConfirm} appearance="subtle"><text className={classes.confirm}>Confirm</text></Button>
                             </DialogTrigger>
                             <DialogTrigger disableButtonEnhancement>
                                 <Button appearance="subtle"><text className={classes.cancel}>Cancel</text></Button>

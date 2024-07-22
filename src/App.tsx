@@ -1,10 +1,6 @@
-
 import * as React from "react"
-
 import Per from './personal/personal_app.tsx'
 import Squ from './square/square_app.tsx'
-
-
 import {
   NavDivider,
   NavDrawer,
@@ -14,7 +10,6 @@ import {
   NavItem,
   NavSectionHeader,
 } from "@fluentui/react-nav-preview"
-
 import {
   Button,
   Tooltip,
@@ -28,7 +23,6 @@ import {
   DialogTitle,
   DialogActions,
 } from "@fluentui/react-components"
-
 import {
   Home32Regular,
   Home32Filled,
@@ -49,28 +43,26 @@ const useStyles = makeStyles({
 
   content: {
     flex: "1",
-
     display: "grid",
     justifyContent: "flex-start",
     alignItems: "flex-start",
   },
 
   button: {
-    border: "none", // 移除边框
+    border: "none",
     marginTop: "10px",
     marginLeft: "5px",
     borderRadius: "5px",
-    backgroundColor: "#ebf3fc", // 按钮背景颜色为蓝色,
+    backgroundColor: "#ebf3fc",
     color: tokens.colorNeutralForeground1,
     '&:hover': {
-      backgroundColor: "lightblue", // 悬停时的背景颜色
+      backgroundColor: "lightblue",
     },
 
   },
 
   field: {
     display: "flex",
-
     flexDirection: "column",
     gridRowGap: tokens.spacingVerticalS,
   },
@@ -82,14 +74,12 @@ const useStyles = makeStyles({
     paddingTop: "4px",
   },
   navDrawer: {
-
-    borderBottomRightRadius: "50px", // 圆角半径
-    overflow: "hidden", // 确保子元素不溢出圆角区域
+    borderBottomRightRadius: "50px",
+    overflow: "hidden",
   },
   navSignOut: {
     marginTop: "auto",
     backgroundColor: "transparent",
-
     border: "none",
     width: "100%",
     textAlign: "left",
@@ -100,29 +90,47 @@ const useStyles = makeStyles({
     fontSize: "18px",
     gap: "8px",
   },
-
-
 });
-
 
 const Personal = bundleIcon(Home32Filled, Home32Regular);
 const Square = bundleIcon(LeafTwo32Filled, LeafTwo32Regular);
 
-
-
-
 const NavDrawerDefault = (props: Partial<NavDrawerProps>) => {
-
   const styles = useStyles();
   const [page, setPage] = React.useState(2);
   const [isOpen, setIsOpen] = React.useState(false);
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const drawerRef = React.useRef<HTMLDivElement>(null);
 
   const handleSignOut = () => {
     window.location.href = "/src/logic/logic.html";
   };
 
+  const handleClickOutside = (event: MouseEvent) => {
+    if (drawerRef.current && !drawerRef.current.contains(event.target as Node)) {
+      setIsOpen(false);
+    }
+  };
 
+  React.useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  React.useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsOpen(true); // Open the drawer when ESC is pressed
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   const renderHamburgerWithToolTip = () => {
     return (
@@ -139,83 +147,51 @@ const NavDrawerDefault = (props: Partial<NavDrawerProps>) => {
 
   return (
     <div className={styles.root}>
-
       <NavDrawer
         className={styles.navDrawer}
         defaultSelectedValue="2"
         open={isOpen}
-
+        ref={drawerRef}
       >
         <NavDrawerHeader>{renderHamburgerWithToolTip()}</NavDrawerHeader>
-
         <NavSectionHeader>Navigation</NavSectionHeader>
-
         <NavDivider />
-
         <NavDrawerBody>
-
           <NavItem onClick={() => setPage(1)} icon={<Personal />} value="1" className={styles.navItemText}>
             Personal Page
           </NavItem>
-
           <NavItem onClick={() => setPage(2)} icon={<Square />} value="2" className={styles.navItemText}>
             Hobby Square
           </NavItem>
-
-
         </NavDrawerBody>
-
         <NavDrawerBody>
-
           <Dialog open={isDialogOpen} onOpenChange={(_, data) => setIsDialogOpen(data.open)}>
             <DialogTrigger>
-
               <button className={styles.navSignOut} onClick={() => setIsDialogOpen(true)}>
                 <ArrowHookDownLeft28Filled />
                 <span>Sign Out</span>
               </button>
-
             </DialogTrigger>
-
             <DialogSurface>
-
-
               <DialogBody>
                 <DialogTitle>Confirm Sign Out</DialogTitle>
                 <DialogContent>Are you sure you want to sign out?</DialogContent>
-
                 <DialogActions>
-
                   <Button onClick={handleSignOut} style={{ backgroundColor: "#d13438", color: "white" }} >Yes</Button>
                   <Button onClick={() => setIsDialogOpen(false)}>Cancel</Button>
                 </DialogActions>
               </DialogBody>
-
             </DialogSurface>
-
           </Dialog>
-
         </NavDrawerBody>
-
       </NavDrawer>
-
-      <div >
-
+      <div>
         {renderHamburgerWithToolTip()}
-
         {page === 1 && <Per />}
         {page === 2 && <Squ />}
-
-
       </div>
-
-
     </div>
   );
 };
-
-
-
-
 
 export default NavDrawerDefault;

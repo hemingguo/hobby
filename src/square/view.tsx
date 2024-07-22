@@ -36,6 +36,14 @@ const useStyles = makeStyles({
         marginLeft: "450px",
         marginBottom: "40px",
     },
+    name: {
+
+        color: "	#1E90FF"
+    },
+    des: {
+        fontFamily: "Bahnschrift", // 副标题设置字体为 Bahnschrift
+        color: "#756c83"
+    },
     roundButton: {
         position: "fixed",
         top: "55px",
@@ -60,6 +68,7 @@ const useStyles = makeStyles({
         height: "calc(100vh - 160px)",
     },
     card: {
+
         position: "relative",
         width: "100%",
         boxSizing: "border-box",
@@ -67,7 +76,10 @@ const useStyles = makeStyles({
         marginBottom: "10px",
     },
     content: {
+        padding: "16px",
+        borderRadius: "15px ", // 设置圆角
         margin: "auto",
+        backgroundColor: "#fafafa",
         width: "720px",
         maxWidth: "100%",
         maxHeight: "100%",
@@ -75,6 +87,14 @@ const useStyles = makeStyles({
     input: {
         width: "65%",
         marginTop: "50px",
+    },
+    main: {
+        color: "grey",
+        fontFamily: "Bahnschrift",
+        paddingLeft: "20px",
+        wordWrap: "break-word", /* Allows long words to break and wrap onto the next line */
+        overflowWrap: "break-word", /* Handles wrapping of long words */
+        whiteSpace: "normal", /* Ensures text will wrap normally */
     }
 });
 
@@ -170,13 +190,16 @@ const View: React.FC<ViewProps> = ({ onToggleView }) => {
                                 }
                                 header={
                                     <Body1>
-                                        <b>Hemingguo</b>
+                                        <b className={classes.name}>Hemingguo</b>
                                     </Body1>
                                 }
-                                description={<Caption1>2024-7-21</Caption1>}
+                                description={<Caption1 className={classes.des}>2024-7-21</Caption1>}
                             />
 
-                            <CardPreview >
+                            <CardPreview className={classes.main}>
+                                讨厌...
+                                蒋蒋
+                                ...
                             </CardPreview >
 
                             <CardFooter>
@@ -220,7 +243,7 @@ const View: React.FC<ViewProps> = ({ onToggleView }) => {
                                             value={currentComment}
                                             onChange={handleCommentChange}
                                             placeholder="Type here"
-                                           
+
                                         />
                                     </DialogContent>
                                     <DialogActions>

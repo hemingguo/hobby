@@ -1,18 +1,26 @@
-// 该文件渲染创建兴趣圈页面
-
-
+import { useEffect, useRef, useState } from "react";
 import * as React from "react";
 import {
     makeStyles,
     Field,
     Input,
 } from "@fluentui/react-components";
-
+import { List, ListItem } from "@fluentui/react-list-preview";
 import {
     ArrowReply28Filled,
 } from "@fluentui/react-icons";
 
 const useStyles = makeStyles({
+    container: {
+        marginTop: "5%",
+        width: "1050px",
+        maxHeight: "70%",
+        overflowY: "auto",
+        overflowX: "auto",
+        padding: "20px",
+        border: "none",
+        borderRadius: "10px",
+    },
     title: {
         fontSize: "2em",
         fontWeight: "bold",
@@ -45,58 +53,116 @@ const useStyles = makeStyles({
     },
     Field: {
         marginTop: "40px",
-        marginLeft: "30%",
+        marginLeft: "15%",
     },
     input: {
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+        backgroundColor: "#f9f9f9",
         marginTop: "20px",
         width: "700px",
-        border: "none", // Remove border
-        borderBottom: "2px solid #ccc", // Add bottom border
-        transition: "border-bottom-color 0.3s ease", // Smooth transition
+        border: "none",
+        transition: "border-bottom-color 0.3s ease",
+        borderBottom: "2px solid #ccc",
         '&:focus': {
-            outline: "none", // Remove default outline
-            borderBottom: "2px solid #0000FF", // Blue bottom border on focus
+            outline: "none",
+            boxShadow: "0 0 0 rgba(0, 0, 0, 0.2)",
         },
     },
-
     textarea: {
         marginTop: "20px",
         width: "700px",
         height: "200px",
         padding: "10px",
         borderRadius: "5px",
-        border: "2px solid #ccc",
+        border: "none",
         fontSize: "16px",
         resize: "none",
-        transition: "border-bottom-color 0.3s ease",
+        transition: "border-bottom-color 0.3s ease, box-shadow 0.3s ease",
+        backgroundColor: "#f9f9f9",
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
         '&:focus': {
             outline: "none",
-            borderBottom: "2px solid 		#0000CD", // Blue bottom border on focus
+            borderBottom: "2px solid #0000CD",
+            boxShadow: "0 0 0 rgba(0, 0, 0, 0.2)",
         },
     },
-
     createButton: {
         fontWeight: "700",
         padding: "10px 20px",
-        backgroundColor: "#4CAF50",
-        color: "yellow",
+        backgroundColor: "#fbe8d3",
+        color: "#f85f73",
         border: "none",
         borderRadius: "5px",
         cursor: "pointer",
         '&:hover': {
-            backgroundColor: "#45a049",
+            backgroundColor: "#ebcbae",
         },
+        marginTop: "50px",
+        marginLeft: "800px",
+        marginBottom: "20px",
+        justifyContent: "center",
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.4)",
     },
-    But: {
-        position: "fixed",
+    avatarContainer: {
+        display: "flex",
+        alignItems: "center",
+        marginTop: "20px",
+    },
+    avatar: {
+        width: "200px",
+        height: "200px",
+        borderRadius: "10px",
+        backgroundColor: "#ccc",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        marginRight: "10px",
+        overflow: "hidden",
+    },
+    avatarImage: {
+        width: "100%",
+        height: "100%",
+        objectFit: "cover",
+    },
+    uploadtext: {
+        color: "grey",
+        fontFamily: "Bahnschrift", // 设置字体为 Bahnschrift
+    },
+    uploadButton: {
+        marginLeft: "70px",
+        padding: "6px 12px",
+        background: "linear-gradient(90deg, rgba(138, 43, 226, 0.8), rgba(0, 206, 209, 0.8))", /* Intense blue-yellow gradient */
+        color: "#FFAA00",
+        fontWeight: "800",
+        border: "none",
+        borderRadius: "0", /* Remove border radius for the parallelogram effect */
+        cursor: "pointer",
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.3)", /* Enhanced shadow for a stronger 3D effect */
+        fontSize: "14px",
 
-        marginLeft: "1000px",
-    }
+        transition: "background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease",
+        clipPath: "polygon(10% 0%, 100% 10%, 90% 100%, 0% 90%)", /* Parallelogram shape */
+        backdropFilter: "blur(8px)", /* Blur effect for a frosted glass appearance */
+        position: "relative", /* Positioning for the animation */
+        overflow: "hidden", /* Hide overflow for the gradient animation */
+        fontFamily: "Bahnschrift", // 设置字体为 Bahnschrift
+
+        '&:hover': {
+            backgroundColor: "rgba(0, 128, 255, 0.9)", /* Slightly darker on hover */
+            boxShadow: "0 6px 12px rgba(0, 0, 0, 0.4)",
+            transform: "translateY(-4px)", /* More pronounced lift on hover */
+        },
+
+    },
+
+
 });
 
 const AddGroup = () => {
-    const [name, setName] = React.useState("");
-    const [intro, setIntro] = React.useState("");
+    const [name, setName] = useState("");
+    const [intro, setIntro] = useState("");
+    const [avatar, setAvatar] = useState<string | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleBackClick = () => {
         window.location.href = "/src/index.html";
@@ -104,10 +170,34 @@ const AddGroup = () => {
 
     const classes = useStyles();
 
+    useEffect(() => {
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = 'auto';
+        };
+    }, []);
+
     const handleCreateClick = () => {
-        // Handle the create button click event
-        alert(`Group Created!\nName: ${name}\nIntroduce: ${intro}`);
+        window.location.href = "/src/index.html";
     };
+
+    const handleUploadClick = () => {
+        if (fileInputRef.current) {
+            fileInputRef.current.click(); // Trigger file input click
+        }
+    };
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setAvatar(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
     return (
         <>
             <div>
@@ -119,30 +209,58 @@ const AddGroup = () => {
                 ~~ Add A New Group! ~~
             </div>
 
-            <div>
-                <Field className={classes.Field} label={<span className={classes.field}>Name</span>}>
-                    <Input
-                        className={classes.input}
-                        appearance="filled-lighter-shadow"
-                        onChange={(ev, data) => setName(data.value)}
-                        value={name}
-                    />
-                </Field>
-                <Field className={classes.Field} label={<span className={classes.field}>Introduce</span>}>
-                    <textarea
-                        className={classes.textarea}
-                        onChange={(ev) => setIntro(ev.target.value)}
-                        value={intro}
-                    />
-                </Field>
-            </div>
+            <List className={classes.container}>
+                <ListItem>
+                    <Field className={classes.Field} label={<span className={classes.field}>Name</span>}>
+                        <Input
+                            className={classes.input}
+                            appearance="filled-lighter-shadow"
+                            onChange={(ev, data) => setName(data.value)}
+                            value={name}
+                        />
+                    </Field>
+                </ListItem>
 
-            <div className={classes.But}>
-                <button className={classes.createButton} onClick={handleCreateClick}>
-                    Create
-                </button>
-            </div>
+                <ListItem>
+                    <Field className={classes.Field} label={<span className={classes.field}>Avatar</span>}>
+                        <div className={classes.avatarContainer}>
+                            <div className={classes.avatar}>
+                                {avatar ? (
+                                    <img src={avatar} alt="Avatar" className={classes.avatarImage} />
+                                ) : (
+                                    <span className={classes.uploadtext}>Upload Image</span>
+                                )}
+                            </div>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileChange}
+                                style={{ display: "none" }}
+                                ref={fileInputRef}
+                            />
+                            <button onClick={handleUploadClick} className={classes.uploadButton}>
+                                Choose Image
+                            </button>
+                        </div>
+                    </Field>
+                </ListItem>
 
+                <ListItem>
+                    <Field className={classes.Field} label={<span className={classes.field}>Introduce</span>}>
+                        <textarea
+                            className={classes.textarea}
+                            onChange={(ev) => setIntro(ev.target.value)}
+                            value={intro}
+                        />
+                    </Field>
+                </ListItem>
+
+                <ListItem>
+                    <button className={classes.createButton} onClick={handleCreateClick}>
+                        Create
+                    </button>
+                </ListItem>
+            </List>
         </>
     );
 };

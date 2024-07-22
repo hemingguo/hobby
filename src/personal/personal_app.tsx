@@ -1,5 +1,5 @@
 // 该文件为个人主页面
-
+import { useEffect } from "react";
 import * as React from "react";
 import { Image, makeStyles, InfoLabel, InfoLabelProps, Link } from "@fluentui/react-components";
 import { Card, CardHeader, CardPreview, CardFooter, Body1, Caption1, Button } from "@fluentui/react-components";
@@ -99,7 +99,13 @@ const Per = () => {
     const handleButtonClick = () => {
         setIsPrimaryView(!isPrimaryView);
     };
-
+    useEffect(() => {
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = 'auto';
+        };
+    }, []);
+    
     return (
         <div>
             {isPrimaryView ? (
