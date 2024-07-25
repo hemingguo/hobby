@@ -1,9 +1,15 @@
-import { prop } from '@typegoose/typegoose';
+import { prop, modelOptions } from '@typegoose/typegoose';
 
+@modelOptions({
+    schemaOptions: { collection: 'Users' }  // 设置集合名称
+})
 export class User {
     @prop()
-    public name?: string;
+    public id?: number;
 
-    @prop({type: () => [String]})
-    public jobs?: string[];
+    @prop()
+    public phone?: string;
+
+    @prop()
+    public password?: string;
 }

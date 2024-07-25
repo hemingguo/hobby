@@ -1,19 +1,15 @@
-// src/controller/home.ts
-
-import { Controller, Get, Inject } from '@midwayjs/core';
-
-import { TestService } from '../service/user';
+import { Controller, Get } from '@midwayjs/core';
 
 @Controller('/')
 export class HomeController {
 
-    @Inject()
-    testService: TestService;
+
 
     @Get('/')
     async home() {
-        // await this.testService.getTest(); // 调用 getTest 方法
 
-        return "Hello Midwayjs!";
+        return "Hello, Hobby Square!";
     }
+
+
 }

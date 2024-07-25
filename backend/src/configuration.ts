@@ -9,7 +9,7 @@ import { ReportMiddleware } from './middleware/report.middleware';
 import * as axios from '@midwayjs/axios';
 import * as mongoose from '@midwayjs/mongoose';
 import * as typegoose from '@midwayjs/typegoose';
-
+import * as crossDomain from '@midwayjs/cross-domain';
 
 @Configuration({
   imports: [
@@ -22,6 +22,7 @@ import * as typegoose from '@midwayjs/typegoose';
     mongoose,
     typegoose,
     axios,
+    crossDomain,
   ],
   importConfigs: [join(__dirname, './config')],
 })

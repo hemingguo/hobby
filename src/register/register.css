@@ -39,6 +39,13 @@
     font-weight: bold;
 }
 
+.label-n {
+    margin-right: 65px;
+    font-size: 20px !important;
+    color: #ff8c00 !important;
+    font-weight: bold;
+}
+
 .label-p {
     margin-right: 52px;
     font-size: 20px !important;
