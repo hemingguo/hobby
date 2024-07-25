@@ -57,7 +57,7 @@ const useStyles = makeStyles({
         flexWrap: "wrap",
         overflowY: "auto",
         maxHeight: "100%",
-        height: "calc(100vh - 160px)",
+        height: "calc(100vh - 300px)",
     },
     card: {
         position: "relative",
@@ -91,7 +91,7 @@ interface ViewProps {
     onToggleView: () => void;
 }
 
-const View: React.FC<ViewProps> = ({onToggleView}) => {
+const View: React.FC<ViewProps> = ({ onToggleView }) => {
 
 
     const classes = useStyles();

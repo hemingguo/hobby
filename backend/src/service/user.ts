@@ -26,4 +26,11 @@ export class UserRL {
     }
 
 
+    async validateUserCredentials(phone: string) {
+        console.log(`Searching for phone: ${phone}`);
+        const user = await this.userModel.findOne({ phone }).exec();
+        console.log(`Query result: ${JSON.stringify(user)}`);
+        return user ? user.password : null;
+    }
+
 }
