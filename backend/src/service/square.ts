@@ -21,17 +21,18 @@ export class CircleService {
 
     async createCircle(name: string, description: string) {
         const id = ++this.currentId;
-        //const createAt = new Date();
-        //const updateAt = new Date();
 
+        // 获取东八区的当前时间
+        const now = new Date();
+        const offset = 8 * 60; // 
+        const chinaTime = new Date(now.getTime() + offset * 60 * 1000);
 
         await this.circleModel.create({
             id: id,
             name: name,
             description: description,
-            //created_at: createAt,
-            //updated_at: updateAt,
+            created_at: chinaTime, // 直接传递 Date 对象
+            updated_at: chinaTime, // 同上
         } as Circle);
-
     }
 }
