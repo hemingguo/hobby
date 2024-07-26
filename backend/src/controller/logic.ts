@@ -14,10 +14,10 @@ export class LogicController {
     @Post('/')
     async login(@Body() userData: { phone: string, password: string }) {
         try {
-            const storedPassword = await this.userLogic.validateUserCredentials(userData.phone);
-            if (storedPassword) {
-                if (storedPassword === userData.password) {
-                    return { success: true, message: 'Login successful' };
+            const result = await this.userLogic.validateUserCredentials(userData.phone);
+            if (result) {
+                if (result.password === userData.password) {
+                    return { success: true, message: 'Login successful', id: result.id};
                 } else {
                     return { success: false, message: 'Invalid password' };
                 }

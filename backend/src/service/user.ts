@@ -30,7 +30,10 @@ export class UserRL {
         console.log(`Searching for phone: ${phone}`);
         const user = await this.userModel.findOne({ phone }).exec();
         console.log(`Query result: ${JSON.stringify(user)}`);
-        return user ? user.password : null;
+        return user ? {
+            password: user.password,
+            id: user.id,
+        } : null;
     }
 
 }

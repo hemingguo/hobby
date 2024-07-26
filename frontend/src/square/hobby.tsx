@@ -35,7 +35,11 @@ const useStyles = makeStyles({
         maxWidth: "100%",
         borderRadius: "15px ", // 设置圆角
         backgroundColor: "#fafafa",
-
+        transition: "transform 0.3s ease, box-shadow 0.3s ease",
+        "&:hover": {
+            transform: "translateY(-10px)",
+            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+        },
     },
     describe: {
         fontFamily: "Bahnschrift", // 设置字体为 Bahnschrift
@@ -86,7 +90,13 @@ const Hob: React.FC<HobProps> = ({ onToggleView }) => {
 
             <CardPreview >
                 <div className={styles.describe}>
-                    This interest group is mainly for discussing games, and people who love games are welcome to join
+                    {Math.random() < 0.5 ? "jjjjjjjj" : "fsadfasdfasdfasdf asdfsadfasdddd\
+                    dddddddddddddddd\
+                    dddddddddddd\
+                    dddddddddddddddddddddddddddddd\
+                    dddddddddddddddddddddddddddd\
+                    dddddddddddddd\
+                    dd"}
                 </div>
             </CardPreview>
 

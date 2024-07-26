@@ -1,4 +1,5 @@
 .welcome-message {
+    font-style: italic;
     font-size: 4em;
 
     font-weight: bold;
@@ -33,6 +34,7 @@
 }
 
 .label-a {
+    font-style: italic;
     margin-right: 40px;
     font-size: 20px !important;
     color: #ff8c00 !important;
@@ -40,6 +42,7 @@
 }
 
 .label-n {
+    font-style: italic;
     margin-right: 65px;
     font-size: 20px !important;
     color: #ff8c00 !important;
@@ -47,6 +50,7 @@
 }
 
 .label-p {
+    font-style: italic;
     margin-right: 52px;
     font-size: 20px !important;
     color: #ff8c00 !important;

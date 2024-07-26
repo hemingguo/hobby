@@ -101,8 +101,11 @@ const NavDrawerDefault = (props: Partial<NavDrawerProps>) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const drawerRef = React.useRef<HTMLDivElement>(null);
+  const [selectedValue, setSelectedValue] = React.useState("2");
+
 
   const handleSignOut = () => {
+    localStorage.removeItem('userId');  // 移除存储的手机号
     window.location.href = "/src/logic/logic.html";
   };
 
@@ -111,6 +114,19 @@ const NavDrawerDefault = (props: Partial<NavDrawerProps>) => {
       setIsOpen(false);
     }
   };
+
+  React.useEffect(() => {
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      window.location.href = "/src/logic/logic.html"; // 跳转到登录页面
+    }
+    const post = localStorage.getItem('post');
+    if (post === "true") { 
+      setPage(1);
+      setSelectedValue("1");
+      localStorage.removeItem('post');
+    }
+  }, []);
 
   React.useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
@@ -132,6 +148,8 @@ const NavDrawerDefault = (props: Partial<NavDrawerProps>) => {
     };
   }, []);
 
+    
+
   const renderHamburgerWithToolTip = () => {
     return (
       <Tooltip content="Navigation" relationship="label">
@@ -149,7 +167,7 @@ const NavDrawerDefault = (props: Partial<NavDrawerProps>) => {
     <div className={styles.root}>
       <NavDrawer
         className={styles.navDrawer}
-        defaultSelectedValue="2"
+        selectedValue={selectedValue}
         open={isOpen}
         ref={drawerRef}
       >
@@ -157,10 +175,18 @@ const NavDrawerDefault = (props: Partial<NavDrawerProps>) => {
         <NavSectionHeader>Navigation</NavSectionHeader>
         <NavDivider />
         <NavDrawerBody>
-          <NavItem onClick={() => setPage(1)} icon={<Personal />} value="1" className={styles.navItemText}>
+          <NavItem 
+            onClick={() => { setPage(1); setSelectedValue("1"); }} 
+            icon={<Personal />} 
+            value="1" 
+            className={styles.navItemText}>
             Personal Page
           </NavItem>
-          <NavItem onClick={() => setPage(2)} icon={<Square />} value="2" className={styles.navItemText}>
+          <NavItem  
+            onClick={() => { setPage(2); setSelectedValue("2"); }} 
+            icon={<Square />} 
+            value="2" 
+            className={styles.navItemText}>
             Hobby Square
           </NavItem>
         </NavDrawerBody>

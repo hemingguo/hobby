@@ -12,4 +12,16 @@ export class User {
 
     @prop()
     public password?: string;
+
+    @prop()
+    public username?: string;
+
+    @prop()
+    public post_count?: number;
+
+    @prop()
+    public like_count?: number;
+
+    @prop()
+    public created_at?: Date;
 }

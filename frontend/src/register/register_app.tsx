@@ -6,6 +6,12 @@ import {
     Input,
     Label,
     Button,
+    Toaster,
+    useToastController,
+    ToastTrigger,
+    ToastTitle,
+    Toast,
+    useId,
 } from '@fluentui/react-components';
 import { useState } from 'react';
 
@@ -15,20 +21,41 @@ const Reg = () => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
+    const toasterId = useId('toaster');
+    const { dispatchToast } = useToastController(toasterId);
+
+
+    const showToast = (message: string, intent: 'success' | 'error' | 'warning' | 'info') => {
+        dispatchToast(
+            <Toast>
+                <ToastTitle
+                    action={
+                        <ToastTrigger>
+                            <Button appearance="transparent" size="small">Close</Button>
+                        </ToastTrigger>
+                    }
+                >
+                    {message}
+                </ToastTitle>
+            </Toast>,
+            { intent: intent }
+        );
+    };
+
     const handleRegister = async () => {
         if (!/^\d{11}$/.test(phone)) {
-            alert('Phone number must be 11 digits!');
+            showToast('Phone number must be 11 digits!', 'warning');
             return;
         }
 
         if (password.length < 6) {
-            alert('Password must be at least 6 characters!');
+            showToast('Password must be at least 6 characters!', 'warning');
             return;
         }
-        
+
 
         if (password !== confirmPassword) {
-            alert('Passwords do not match!');
+            showToast('Passwords do not match!', 'error');
             return;
         }
 
@@ -45,13 +72,15 @@ const Reg = () => {
             });
 
             if (response.ok) {
-                alert('Registration successful!');
-                window.location.href = '../logic/logic.html';
+                showToast('Registration successful!', 'success');
+                setTimeout(() => {
+                    window.location.href = '../logic/logic.html';
+                }, 800);
             } else {
-                alert('Registration failed');
+                showToast('Registration failed', 'error');
             }
         } catch (error) {
-            alert('Registration failed');
+            showToast('Registration failed', 'error');
             console.error(error); // 打印错误信息
         }
     };
@@ -72,6 +101,7 @@ const Reg = () => {
                 <div className="input-group">
                     <Label className="label-n">Phone</Label>
                     <Input
+                        appearance="filled-lighter-shadow"
                         className="input"
                         placeholder="Enter your phone number"
                         type="tel"
@@ -82,6 +112,7 @@ const Reg = () => {
                 <div className="input-group">
                     <Label className="label-a">Password</Label>
                     <Input
+                        appearance="filled-lighter-shadow"  
                         className="input"
                         placeholder="Enter your password"
                         type="password"
@@ -92,6 +123,7 @@ const Reg = () => {
                 <div className="input-group">
                     <Label className="label-p">Confirm</Label>
                     <Input
+                        appearance="filled-lighter-shadow"
                         className="input"
                         placeholder="Re-enter to confirm"
                         type="password"
@@ -104,6 +136,7 @@ const Reg = () => {
                 <Button className="button button-register" onClick={handleRegister} shape="circular">OK</Button>
                 <Button className="button button-cancel" onClick={handleCancel} shape="circular">Cancel</Button>
             </div>
+            <Toaster toasterId={toasterId} />
         </>
     );
 };

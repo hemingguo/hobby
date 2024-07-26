@@ -232,7 +232,7 @@ const View: React.FC<ViewProps> = ({ onToggleView }) => {
                                 <DialogBody>
                                     <DialogTitle>Comments</DialogTitle>
                                     <DialogContent>
-                                        <div>
+                                        <div style={{ wordBreak: "break-all" }}>
                                             {comments[index].map((comment, i) => (
                                                 <p key={i}>{comment}</p>
                                             ))}

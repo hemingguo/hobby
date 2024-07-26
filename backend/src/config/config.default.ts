@@ -1,5 +1,8 @@
 import { MidwayConfig } from '@midwayjs/core';
 import { User } from '../entity/user';
+import { Circle } from '../entity/circle';
+import { Post } from '../entity/post';
+import { Comment } from '../entity/comment';
 
 export default {
   // use for cookie sign key, should change to your own and keep security
@@ -20,7 +23,7 @@ export default {
         connectTimeoutMS: 100000,  // 连接超时时间设置为100秒
         socketTimeoutMS: 100000,   // 套接字超时时间设置为100秒
       },
-      entities: [User],
+      entities: [User, Circle, Post, Comment],
     },
   },
   cors: {
@@ -29,5 +32,11 @@ export default {
   },
   controller: {
     directories: ['src/controller'],
+  },
+  oss: {
+    region: 'oss-cn-shanghai', // 替换为你的OSS区域
+    accessKeyId: 'LTAI5tADsPiNirkRAB2noLyS', // 替换为你的AccessKeyId
+    accessKeySecret: 'hixCuJrk571WAnIk3EdzkistzhQ5tB', // 替换为你的AccessKeySecret
+    bucket: 'jxhobby', // 替换为你的Bucket名称
   },
 } as MidwayConfig;

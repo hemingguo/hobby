@@ -97,6 +97,8 @@ const Per = () => {
     const [isPrimaryView, setIsPrimaryView] = React.useState(true);
 
     const handleButtonClick = () => {
+        const post = "true";
+        localStorage.setItem("post", post);
         setIsPrimaryView(!isPrimaryView);
     };
     useEffect(() => {

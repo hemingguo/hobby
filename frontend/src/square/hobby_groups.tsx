@@ -21,16 +21,12 @@ const useStyles = makeStyles({
         width: "480px",
         maxWidth: "100%",
         borderRadius: "15px", // 设置圆角
-        backgroundColor: "#fafafa",
+        
         position: "relative",
         boxSizing: "border-box",
         marginTop: "50px",
         marginBottom: "10px",
-        transition: "transform 0.3s ease, box-shadow 0.3s ease",
-        "&:hover": {
-            transform: "translateY(-10px)",
-            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-        },
+        
     },
     list: {
         display: "flex",
