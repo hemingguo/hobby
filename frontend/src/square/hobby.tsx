@@ -67,7 +67,7 @@ const useStyles = makeStyles({
 interface HobProps {
     onToggleView: () => void;
     title: string;
-    author: string;
+    author_id: number;
     description: string;
     created: string;
     updated: string;
@@ -76,7 +76,7 @@ interface HobProps {
 
 }
 
-const Hob: React.FC<HobProps> = ({ title, author, description, created, updated, imageUrl, onToggleView }) => {
+const Hob: React.FC<HobProps> = ({ title, author_id, description, created, updated, imageUrl, onToggleView }) => {
     const styles = useStyles();
 
     const handleClick = () => {
@@ -98,7 +98,7 @@ const Hob: React.FC<HobProps> = ({ title, author, description, created, updated,
                     </Body1>
                 }
                 description={<Caption1 >
-                    <span className={styles.des}>Founded by {author} in {created}</span><br />
+                    <span className={styles.des}>Founded by {author_id} in {created}</span><br />
                     <span className={styles.desx}>Updated at {updated}</span>
                 </Caption1>}
             />

@@ -6,14 +6,7 @@ import Hob from './hobby.tsx';
 
 import { makeStyles } from "@fluentui/react-components";
 
-const names = [
-    "Melda Bevel",
-    "Demetra Manwaring",
-    "Eusebia Stufflebeam",
-    "Israel Rabin",
-    "Bart Merrill",
-    "Sonya Farner",
-];
+
 
 const useStyles = makeStyles({
     card: {
@@ -40,7 +33,7 @@ const useStyles = makeStyles({
 interface Profile {
     id: number;
     name: string;
-    author: string;
+    author_id: number;
     description: string;
     created_at: string;
     updated_at: string;
@@ -60,22 +53,17 @@ const HobG: React.FC<HobGProps> = ({ onToggleView }) => {
 
 
     React.useEffect(() => {
-        fetch('/api/profiles') // 替换为实际 API 路径
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                setProfiles(data);
-                setLoading(false);
-            })
-            .catch(error => {
-                setError(error.message);
-                setLoading(false);
-            });
+        const fetchData = async () => {
+            const response = await fetch('http://127.0.0.1:7001/circle');
+            const data = await response.json();
+            console.log('Fetched data:', data);
+            setProfiles(data.data); // 确保 data 包含在 data 属性中
+            setLoading(false);
+        };
+
+        fetchData();
     }, []);
+
 
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error}</div>;
@@ -89,7 +77,7 @@ const HobG: React.FC<HobGProps> = ({ onToggleView }) => {
                 >
                     <Hob
                         title={profile.name}
-                        author={profile.author}
+                        author_id={profile.author_id}
                         description={profile.description}
                         created={profile.created_at}
                         updated={profile.updated_at}

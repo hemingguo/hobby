@@ -27,6 +27,7 @@ import * as upload from '@midwayjs/upload';
     crossDomain,
     oss,
     upload,
+    
   ],
   importConfigs: [join(__dirname, './config')],
 })
