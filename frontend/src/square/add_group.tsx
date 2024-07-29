@@ -182,16 +182,21 @@ const AddGroup = () => {
         };
     }, []);
 
+
+
     const handleCreateClick = async () => {   // * 处理提交
         try {
-            /*
             let imageUrl = "";
 
             if (avatar) {
-                // 上传图片到 OSS
+                console.log("准备上传图片...");
+
                 if (fileInputRef.current?.files?.[0]) {
+                    const file = fileInputRef.current.files[0];
+                    console.log("选择的文件:", file);
+
                     const formData = new FormData();
-                    formData.append('file', fileInputRef.current.files[0]);
+                    formData.append('file', file);
 
                     const uploadResponse = await fetch("http://127.0.0.1:7001/upload", {
                         method: 'POST',
@@ -203,14 +208,14 @@ const AddGroup = () => {
                     }
 
                     const uploadResult = await uploadResponse.json();
+                    console.log("Upload result:", uploadResult); // 打印上传结果
                     imageUrl = uploadResult.url;
                 } else {
                     console.error("No file selected for upload.");
                     return;
                 }
             }
-            */
-
+            const author_id = localStorage.getItem("userId");
             // 提交圈子信息到后端
             const response = await fetch("http://127.0.0.1:7001/square", {
                 method: "POST",
@@ -220,28 +225,24 @@ const AddGroup = () => {
                 body: JSON.stringify({
                     name: name,
                     intro: intro,
-                    // TODO: imageUrl: imageUrl, 
+                    imageUrl: imageUrl,
+                    author_id: author_id,
                 }),
             });
 
-            
             const result = await response.json();
 
             if (result.success) {
-                // 成功后跳转到另一个页面
-                // console.log('Circle created successfully:', result);
-                window.location.href = "/src/index.html";
+
+                console.log('Circle created successfully:', result);
+                window.location.href = "../../index.html";
             } else {
-                // 处理失败，打印错误信息
                 console.error("Error creating circle:", result.message);
             }
-            
 
         } catch (error) {
             console.error("Error creating circle:", error);
-           
         }
-        
     };
 
     const handleUploadClick = () => {

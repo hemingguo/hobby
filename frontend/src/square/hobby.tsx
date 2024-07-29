@@ -24,7 +24,6 @@ import {
 } from "@fluentui/react-components";
 
 import Dia from './dialog.tsx';
-import { classNames } from "@fluentui/react/lib/components/Icon/Icon.styles";
 
 
 
@@ -56,15 +55,28 @@ const useStyles = makeStyles({
         color: "#756c83",
 
     },
+    desx: {
+        fontFamily: "Bahnschrift", // 副标题设置字体为 Bahnschrift
+        color: "#756c83",
+        fontSize: '10px', // 副标题的字体大小，调小一点
+    }
 
 });
 
 
 interface HobProps {
     onToggleView: () => void;
+    title: string;
+    author: string;
+    description: string;
+    created: string;
+    updated: string;
+    imageUrl: string;
+
+
 }
 
-const Hob: React.FC<HobProps> = ({ onToggleView }) => {
+const Hob: React.FC<HobProps> = ({ title, author, description, created, updated, imageUrl, onToggleView }) => {
     const styles = useStyles();
 
     const handleClick = () => {
@@ -75,28 +87,25 @@ const Hob: React.FC<HobProps> = ({ onToggleView }) => {
             <CardHeader
                 image={
                     <img
-                        height={50}
-                        width={50}
-                        src="../../image/white.jpg"
+                        height={60}
+                        width={60}
+                        src={imageUrl}
                     />
                 }
                 header={
                     <Body1>
-                        <b className={styles.title}>Game</b>
+                        <b className={styles.title}>{title}</b>
                     </Body1>
                 }
-                description={<Caption1 className={styles.des}>Founded by hemingguo in 2024-7-17 </Caption1>}
+                description={<Caption1 >
+                    <span className={styles.des}>Founded by {author} in {created}</span><br />
+                    <span className={styles.desx}>Updated at {updated}</span>
+                </Caption1>}
             />
 
             <CardPreview >
                 <div className={styles.describe}>
-                    {Math.random() < 0.5 ? "jjjjjjjj" : "fsadfasdfasdfasdf asdfsadfasdddd\
-                    dddddddddddddddd\
-                    dddddddddddd\
-                    dddddddddddddddddddddddddddddd\
-                    dddddddddddddddddddddddddddd\
-                    dddddddddddddd\
-                    dd"}
+                    {description}
                 </div>
             </CardPreview>
 

@@ -10,7 +10,9 @@ import * as axios from '@midwayjs/axios';
 import * as mongoose from '@midwayjs/mongoose';
 import * as typegoose from '@midwayjs/typegoose';
 import * as crossDomain from '@midwayjs/cross-domain';
+import * as oss from '@midwayjs/oss';
 
+import * as upload from '@midwayjs/upload';
 @Configuration({
   imports: [
     koa,
@@ -23,6 +25,8 @@ import * as crossDomain from '@midwayjs/cross-domain';
     typegoose,
     axios,
     crossDomain,
+    oss,
+    upload,
   ],
   importConfigs: [join(__dirname, './config')],
 })
@@ -34,6 +38,7 @@ export class MainConfiguration {
 
   async onReady() {
     // add middleware
+    
     this.app.useMiddleware([ReportMiddleware]);
     // add filter
     // this.app.useFilter([NotFoundFilter, DefaultErrorFilter]);

@@ -1,28 +1,39 @@
-// src/controller/UploadController.ts
-import { Controller, Post, Files, Context } from '@midwayjs/core';
-import { OSSService } from '../service/OSSService';
+import { Controller, Post, Files, Inject } from '@midwayjs/core';
+import { OSS_Service } from '../service/OSSService';
 
 @Controller('/upload')
-export class UploadController {
-    ctx: Context;
+export class OSSController {
 
-    constructor(private ossService: OSSService) { }
+    @Inject()
+    ossService: OSS_Service;
 
     @Post('/')
-    async uploadFile(@Files() files) {
-        const file = files.file[0]; // 获取上传的文件
-        if (!file) {
-           
-            return { success: false, message: 'No file uploaded' };
+    async upload(@Files() files: any[]) {
+        console.log("接收到的文件:", files);
+
+        if (!files || files.length === 0) {
+            console.log("No file uploaded");
+            return {
+                success: false,
+                message: 'No file uploaded',
+            };
         }
 
+        const file = files[0];
+        console.log("Processing file:", file);
         try {
-            const result = await this.ossService.put(file.filename, file.buffer);
-            return { success: true, url: result.url };
-        } catch (err) {
-          
-            console.error('Error uploading file:', err);
-            return { success: false, message: 'Upload failed' };
+            const result = await this.ossService.upload(file);
+            console.log("Upload result:", result);
+            return {
+                success: true,
+                url: result.url,
+            };
+        } catch (error) {
+            console.error('Upload error:', error);
+            return {
+                success: false,
+                message: 'Upload failed',
+            };
         }
     }
 }

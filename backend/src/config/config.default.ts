@@ -3,12 +3,22 @@ import { User } from '../entity/user';
 import { Circle } from '../entity/circle';
 import { Post } from '../entity/post';
 import { Comment } from '../entity/comment';
-
+//import { join } from 'path';
 export default {
   // use for cookie sign key, should change to your own and keep security
   keys: '1721640634128_1039',
   koa: {
     port: 7001,
+  },
+  oss: {
+    client: {
+      region: 'oss-cn-shanghai', // 替换为你的OSS区域
+      accessKeyId: 'LTAI5tLmjbxchenKA4asvCAM', // 替换为你的AccessKeyId
+      accessKeySecret: '5EBwd4CjdqSKmV4coMJkg84QV7QLUb', // 替换为你的AccessKeySecret
+      bucket: 'jxhobby', // 替换为你的Bucket名称
+      endpoint: 'oss-cn-shanghai.aliyuncs.com',
+      timeout: '60s',
+    }
   },
   mongoose: {
     client: {
@@ -33,10 +43,6 @@ export default {
   controller: {
     directories: ['src/controller'],
   },
-  oss: {
-    region: 'oss-cn-shanghai', // 替换为你的OSS区域
-    accessKeyId: 'LTAI5tADsPiNirkRAB2noLyS', // 替换为你的AccessKeyId
-    accessKeySecret: 'hixCuJrk571WAnIk3EdzkistzhQ5tB', // 替换为你的AccessKeySecret
-    bucket: 'jxhobby', // 替换为你的Bucket名称
-  },
+  
+
 } as MidwayConfig;

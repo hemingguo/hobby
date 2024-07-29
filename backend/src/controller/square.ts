@@ -7,9 +7,9 @@ export class SquareController {
     circleService: CircleService;
 
     @Post('/')
-    async createSquare(@Body() body: { name: string; intro: string }) {
+    async createSquare(@Body() body: { name: string; intro: string; imageUrl: string; author_id: number }) {
         
-            await this.circleService.createCircle(body.name, body.intro);
+            await this.circleService.createCircle(body.name, body.intro, body.imageUrl, body.author_id);
             return { success: true, message: 'Circle created successfully' };
         
     }

@@ -17,10 +17,10 @@ export class Circle {
   public description?: string;
 
   @prop()
-  public created_at?: Date;
+  public created_at?: string;
 
   @prop()
-  public updated_at?: Date;
+  public updated_at?: string;
 
   @prop({ type: () => [Number] })
   public users?: number[]; // 储存用户ID的数组

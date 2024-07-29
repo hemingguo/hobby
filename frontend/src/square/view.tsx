@@ -74,6 +74,7 @@ const useStyles = makeStyles({
         boxSizing: "border-box",
         marginTop: "50px",
         marginBottom: "10px",
+        
     },
     content: {
         padding: "16px",
@@ -83,6 +84,11 @@ const useStyles = makeStyles({
         width: "720px",
         maxWidth: "100%",
         maxHeight: "100%",
+        transition: "transform 0.3s ease, box-shadow 0.3s ease",
+        "&:hover": {
+            transform: "translateY(-10px)",
+            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+        },
     },
     input: {
         width: "65%",
