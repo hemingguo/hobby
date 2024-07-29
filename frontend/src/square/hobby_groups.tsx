@@ -49,7 +49,7 @@ const HobG: React.FC<HobGProps> = ({ onToggleView }) => {
     const classes = useStyles();
     const [profiles, setProfiles] = React.useState<Profile[]>([]);
     const [loading, setLoading] = React.useState<boolean>(true);
-    const [error, setError] = React.useState<string | null>(null);
+    
 
 
     React.useEffect(() => {
@@ -66,7 +66,7 @@ const HobG: React.FC<HobGProps> = ({ onToggleView }) => {
 
 
     if (loading) return <div>Loading...</div>;
-    if (error) return <div>Error: {error}</div>;
+   
 
     return (
         <List className={classes.list} navigationMode="items">
