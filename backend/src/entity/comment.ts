@@ -17,7 +17,7 @@ export class Comment {
     public content?:string;
 
     @prop()
-    public created_at?: Date;
+    public created_at?: string;
 
   
 }

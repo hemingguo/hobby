@@ -8,20 +8,20 @@ export class Post {
     public id?: number;
 
     @prop()
-    circle_id?: number;
+    public circle_id?: number;
 
     @prop()
-    author_id?: number;
+    public author_id?: number;
 
     @prop()
-    title?: string;
+    public title?: string;
 
     @prop()
-    content?: string;
+    public content?: string;
 
     @prop()
-    created_at?: Date;
+    public created_at?: string;
 
     @prop()
-    likes?: number;
+    public likes?: number;
 }

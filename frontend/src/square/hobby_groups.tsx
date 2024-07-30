@@ -25,7 +25,8 @@ const useStyles = makeStyles({
         display: "flex",
         flexWrap: "wrap",
         overflowY: "auto",
-        maxHeight: "100%",
+
+        height: "calc(100vh - 200px)",
     },
 });
 
@@ -49,7 +50,7 @@ const HobG: React.FC<HobGProps> = ({ onToggleView }) => {
     const classes = useStyles();
     const [profiles, setProfiles] = React.useState<Profile[]>([]);
     const [loading, setLoading] = React.useState<boolean>(true);
-    
+
 
 
     React.useEffect(() => {
@@ -66,7 +67,7 @@ const HobG: React.FC<HobGProps> = ({ onToggleView }) => {
 
 
     if (loading) return <div>Loading...</div>;
-   
+
 
     return (
         <List className={classes.list} navigationMode="items">

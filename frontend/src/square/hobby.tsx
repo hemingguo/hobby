@@ -43,7 +43,7 @@ const useStyles = makeStyles({
     describe: {
         fontFamily: "Bahnschrift", // 设置字体为 Bahnschrift
         paddingLeft: "20px",
-
+        paddingRight: "20px",
         color: "grey"
     },
     title: {
@@ -103,8 +103,8 @@ const Hob: React.FC<HobProps> = ({ title, author_id, description, created, updat
                 </Caption1>}
             />
 
-            <CardPreview >
-                <div className={styles.describe}>
+            <CardPreview className={styles.describe}>
+                <div >
                     {description}
                 </div>
             </CardPreview>

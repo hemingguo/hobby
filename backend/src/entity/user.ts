@@ -23,5 +23,5 @@ export class User {
     public like_count?: number;
 
     @prop()
-    public created_at?: Date;
+    public created_at?: string;
 }

@@ -211,7 +211,7 @@ const Pos = () => {
 
     // 处理返回按钮
     const handleButtonClick = () => {
-        
+
         window.location.href = "/src/index.html";
     };
 
