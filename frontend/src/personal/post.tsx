@@ -1,5 +1,5 @@
 // 该文件渲染发帖子页面
-
+import * as React from "react";
 import {
     Select,
     makeStyles,
@@ -17,7 +17,7 @@ import {
     useId,
 } from "@fluentui/react-components";
 
-import * as React from "react";
+import { useEffect } from "react";
 import {
     Status20Filled,
     ArrowReply28Filled,
@@ -207,6 +207,41 @@ const Pos = () => {
     const fileInputRef = React.useRef<HTMLInputElement>(null);
     const [avatar, setAvatar] = React.useState<string | null>(null);
     const [value, setValue] = React.useState("");
+    const [circleNames, setCircleNames] = React.useState<string[]>([]);
+    const [selectedCircle, setSelectedCircle] = React.useState<string>('');
+
+
+    useEffect(() => {
+        // Fetch circle names from the backend
+        const fetchCircleNames = async () => {
+            try {
+
+                const response = await fetch('http://127.0.0.1:7001/circle/names');
+                const data = await response.json();
+                console.log(data);
+                if (response.ok) {
+                    // Check if data.circles is an array and map it
+                    if (Array.isArray(data.circles)) {
+                        setCircleNames(data.circles.map((circle: any) => circle.name));
+                    } else {
+                        console.error('Unexpected data structure:', data);
+                    }
+                } else {
+                    console.error('Failed to fetch circle names:', data.message);
+                }
+            } catch (error) {
+                console.error('Error fetching circle names:', error);
+            }
+        };
+
+        fetchCircleNames();
+    }, []);
+
+
+    // 记录发帖至哪一兴趣圈
+    const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setSelectedCircle(event.target.value);
+    };
 
 
     // 处理返回按钮
@@ -232,6 +267,8 @@ const Pos = () => {
             fileInputRef.current.click(); // 触发文件选择器的点击事件
         }
     };
+
+
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0]; // 添加空值检查
         if (file) {
@@ -244,8 +281,98 @@ const Pos = () => {
     };
     //------------
 
-    const handleConfirm = () => {
-        window.location.href = "/src/index.html";
+    const handleConfirm = async () => {   // 处理提交
+        try {
+            // 分为三步
+
+
+            // 1. 获取 circle_id   MONGODB操作
+            const name = selectedCircle;
+
+
+            const res = await fetch(`http://127.0.0.1:7001/circle/id?name=${encodeURIComponent(name)}`);
+
+            if (!res.ok) {
+                throw new Error('Network response was not ok.');
+            }
+
+            const data = await res.json();
+            const circleId = data.id;
+
+            console.log("兴趣圈id为 " + circleId)
+
+            if (circleId === null) {
+                console.error('Failed to fetch circle ID.');
+                return;
+            }
+
+            // 2. 获取图片URL   OSS操作
+            let imageUrl = "";
+
+
+            if (avatar) {
+                console.log("发帖子~~~~准备上传图片...");
+
+                if (fileInputRef.current?.files?.[0]) {
+                    const file = fileInputRef.current.files[0];
+                    console.log("选择的文件:", file);
+
+                    const formData = new FormData();
+                    formData.append('file', file);
+
+                    const uploadResponse = await fetch("http://127.0.0.1:7001/upload", {
+                        method: 'POST',
+                        body: formData,
+                    });
+
+                    if (!uploadResponse.ok) {
+                        throw new Error(`HTTP error! status: ${uploadResponse.status}`);
+                    }
+
+                    const uploadResult = await uploadResponse.json();
+                    console.log("Upload result:", uploadResult); // 打印上传结果
+                    imageUrl = uploadResult.url;
+
+                } else {
+                    console.error("No file selected for upload.");
+                    return;
+                }
+            }
+
+            const author_id = localStorage.getItem("userId");
+
+
+
+            // 3. 提交圈子信息到后端  MONGODB操作
+
+            const response = await fetch("http://127.0.0.1:7001/post", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    circle_id: circleId,
+                    content: value,
+                    imageUrl: imageUrl,
+                    author_id: author_id,
+
+                }),
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                console.log('Post created successfully:', result);
+                window.location.href = "../../index.html";
+            } else {
+                console.error("Error creating post:", result.message);
+            }
+
+        } catch (error) {
+            console.error("Error creating post:", error);
+        }
+
+
     }
 
 
@@ -319,10 +446,18 @@ const Pos = () => {
                             <div className={classes.inselect}>
                                 <div className={mergeClasses(classes.sfield, classes.filledLighter)}>
 
-                                    <Select id={`${selectId}-filledLighter`} appearance="filled-lighter">
-                                        <option>Red</option>
-                                        <option>Green</option>
-                                        <option>Blue</option>
+                                    <Select
+                                        id={`${selectId}-filledLighter`}
+                                        appearance="filled-lighter"
+                                        onChange={handleSelectChange}  // 绑定事件处理器
+                                        value={selectedCircle}  // 确保设置为 selectedCircle
+                                    >
+                                        <option value="" disabled>Select a circle</option>  // 添加默认选项
+                                        {circleNames.map((name, index) => (
+                                            <option key={index} value={name}>
+                                                {name}
+                                            </option>
+                                        ))}
                                     </Select>
                                 </div>
 
@@ -332,10 +467,10 @@ const Pos = () => {
 
                         <DialogActions>
                             <DialogTrigger disableButtonEnhancement>
-                                <Button onClick={handleConfirm} appearance="subtle"><text className={classes.confirm}>Confirm</text></Button>
+                                <Button onClick={handleConfirm} appearance="subtle"><span className={classes.confirm}>Confirm</span></Button>
                             </DialogTrigger>
                             <DialogTrigger disableButtonEnhancement>
-                                <Button appearance="subtle"><text className={classes.cancel}>Cancel</text></Button>
+                                <Button appearance="subtle"><span className={classes.cancel}>Cancel</span></Button>
                             </DialogTrigger>
                         </DialogActions>
 

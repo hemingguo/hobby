@@ -80,6 +80,8 @@ const Hob: React.FC<HobProps> = ({ title, author_id, description, created, updat
     const styles = useStyles();
 
     const handleClick = () => {
+        localStorage.removeItem('circle_name');  // 移除存储的
+        localStorage.setItem("circle_name", title);
         onToggleView();
     };
     return (

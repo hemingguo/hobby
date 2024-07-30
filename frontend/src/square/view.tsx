@@ -68,13 +68,13 @@ const useStyles = makeStyles({
         height: "calc(100vh - 160px)",
     },
     card: {
-
+        marginLeft: "30px",
         position: "relative",
         width: "100%",
         boxSizing: "border-box",
         marginTop: "50px",
         marginBottom: "10px",
-        
+
     },
     content: {
         padding: "16px",
@@ -118,21 +118,79 @@ interface ViewProps {
 }
 
 const View: React.FC<ViewProps> = ({ onToggleView }) => {
+
     const handleButtonClick = () => {
         onToggleView();
     };
 
     const classes = useStyles();
-
-    const [likes, setLikes] = React.useState<number[]>(Array(names.length).fill(0));
-    const [liked, setLiked] = React.useState<boolean[]>(Array(names.length).fill(false));
+    
+    // 表示点赞情况
+    const [likes, setLikes] = React.useState<number[]>([]);
+    const [liked, setLiked] = React.useState<boolean[]>([]);
+    
+    // 表示评论情况
     const [comments, setComments] = React.useState<string[][]>(Array(names.length).fill([]));//表示整个评论内容数组
     const [isDialogOpen, setIsDialogOpen] = React.useState<boolean[]>(Array(names.length).fill(false));
     const [currentComment, setCurrentComment] = React.useState<string>("");//当前输入的评论
+    
+    
+    const [circleName, setCircleName] = React.useState<string | null>(localStorage.getItem('circle_name') || '');
+    const [posts, setPosts] = React.useState<any[]>([]); // 用于存储帖子数据
+    
+    // 获取当前用户ID
+    const userId = localStorage.getItem('userId');
 
 
 
-    const handleLikeClick = (index: number) => {  //  点赞/取消点赞
+    React.useEffect(() => {
+        const fetchPosts = async () => {
+            try {
+                // 确保 circleName 不为 null
+                if (!circleName) {
+                    console.error('Circle name is not defined.');
+                    return;
+                }
+                // 根据circleName获取circle_id
+                const response = await fetch(`http://127.0.0.1:7001/circle/id?name=${encodeURIComponent(circleName)}`);
+                const data = await response.json();
+                if (response.ok) {
+                    const circle_id = data.id;
+                    console.log(data.id);
+
+                    // 根据 circle_id 获取帖子数据
+                    const postsResponse = await fetch(`http://127.0.0.1:7001/post/circle?circle_id=${circle_id}`);
+                    const postsData = await postsResponse.json();
+                    if (postsResponse.ok) {
+                        console.log('Posts Data:', postsData);
+
+                        setPosts(postsData);
+                        
+                        setLikes(postsData.map((post: any) => post.likes));
+                        setLiked(postsData.map((post: any) => post.users && post.users.includes(parseInt(userId || '0'))));
+                        
+                        setComments(postsData.map(() => []));
+                        setIsDialogOpen(postsData.map(() => false));
+
+
+                    } else {
+                        console.error('Failed to fetch posts:', postsData.message);
+                    }
+                } else {
+                    console.error('Failed to fetch posts:', data.message);
+                }
+            } catch (error) {
+                console.error('Error fetching posts:', error);
+            }
+        };
+
+        fetchPosts();
+    }, [circleName]);
+
+
+
+
+    const handleLikeClick = async (index: number) => {  //  点赞/取消点赞
         const newLikes = [...likes];
         const newLiked = [...liked];
 
@@ -145,7 +203,32 @@ const View: React.FC<ViewProps> = ({ onToggleView }) => {
 
         setLikes(newLikes);
         setLiked(newLiked);
+
+        
+        // 更新数据库中的点赞数
+        try {
+            const response = await fetch(`http://127.0.0.1:7001/post/like`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    id: posts[index].id,
+                    likes: newLikes[index],
+                    userId: userId,
+                    liked: newLiked[index] // 传递点赞状态
+                })
+            });
+
+            if (!response.ok) {
+                console.error('Failed to update likes in the database');
+            }
+        } catch (error) {
+            console.error('Error updating likes:', error);
+        }
     };
+
+
 
     const handleCommentClick = (index: number) => { // 打开评论窗口
         const newDialogState = [...isDialogOpen];
@@ -168,7 +251,6 @@ const View: React.FC<ViewProps> = ({ onToggleView }) => {
         const newComments = [...comments];
         newComments[index] = [...newComments[index], currentComment];//更新对应的评论数组
         setComments(newComments);// 将整个评论数组更新提交
-
         closeDialog(index);
 
     };
@@ -182,13 +264,13 @@ const View: React.FC<ViewProps> = ({ onToggleView }) => {
             <div className={classes.title}>~~ Posts ~~</div>
 
             <List className={classes.list} navigationMode="items">
-                {names.map((name, index) => (
-                    <ListItem className={classes.card} key={name}>
+                {posts.map((post, index) => (
+                    <ListItem className={classes.card} key={post.id}>
                         <Card className={classes.content}>
                             <CardHeader
                                 image={
                                     <img
-                                        src="../../image/white.jpg"
+                                        src={post.imageUrl}
                                         height={50}
                                         width={50}
                                         alt="Profile"
@@ -196,16 +278,14 @@ const View: React.FC<ViewProps> = ({ onToggleView }) => {
                                 }
                                 header={
                                     <Body1>
-                                        <b className={classes.name}>Hemingguo</b>
+                                        <b className={classes.name}>{post.author_id}</b>
                                     </Body1>
                                 }
-                                description={<Caption1 className={classes.des}>2024-7-21</Caption1>}
+                                description={<Caption1 className={classes.des}>{post.created_at}</Caption1>}
                             />
 
                             <CardPreview className={classes.main}>
-                                讨厌...
-                                蒋蒋
-                                ...
+                                {post.content}
                             </CardPreview >
 
                             <CardFooter>

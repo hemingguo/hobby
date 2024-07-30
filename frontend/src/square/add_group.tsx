@@ -210,13 +210,17 @@ const AddGroup = () => {
                     const uploadResult = await uploadResponse.json();
                     console.log("Upload result:", uploadResult); // 打印上传结果
                     imageUrl = uploadResult.url;
+
                 } else {
                     console.error("No file selected for upload.");
                     return;
                 }
             }
+
+
             const author_id = localStorage.getItem("userId");
             // 提交圈子信息到后端
+            // console.log("帖子的图片是！！！ " + imageUrl)
             const response = await fetch("http://127.0.0.1:7001/square", {
                 method: "POST",
                 headers: {

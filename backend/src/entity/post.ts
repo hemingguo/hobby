@@ -14,7 +14,7 @@ export class Post {
     public author_id?: number;
 
     @prop()
-    public title?: string;
+    public imageUrl?: string;
 
     @prop()
     public content?: string;
@@ -23,5 +23,11 @@ export class Post {
     public created_at?: string;
 
     @prop()
+    public updated_at?: string;
+
+    @prop()
     public likes?: number;
+
+    @prop({ type: () => [Number] })
+    public users?: number[]; // 储存用户ID的数组
 }
