@@ -12,7 +12,7 @@ import {
     Button,
     Tooltip,
     Dialog,
-    DialogTrigger,
+
     DialogSurface,
     DialogTitle,
     DialogBody,
@@ -104,44 +104,32 @@ const useStyles = makeStyles({
     }
 });
 
-const names = [
-    "Melda Bevel",
-    "Demetra Manwaring",
-    "Eusebia Stufflebeam",
-    "Israel Rabin",
-    "Bart Merrill",
-    "MAO",
-];
-
 interface ViewProps {
     onToggleView: () => void;
 }
 
 const View: React.FC<ViewProps> = ({ onToggleView }) => {
-
     const handleButtonClick = () => {
         onToggleView();
     };
 
     const classes = useStyles();
-    
+
     // 表示点赞情况
     const [likes, setLikes] = React.useState<number[]>([]);
     const [liked, setLiked] = React.useState<boolean[]>([]);
-    
+
     // 表示评论情况
-    const [comments, setComments] = React.useState<string[][]>(Array(names.length).fill([]));//表示整个评论内容数组
-    const [isDialogOpen, setIsDialogOpen] = React.useState<boolean[]>(Array(names.length).fill(false));
-    const [currentComment, setCurrentComment] = React.useState<string>("");//当前输入的评论
-    
-    
+    const [comments, setComments] = React.useState<string[][]>([]);
+    const [dialogOpenIndex, setDialogOpenIndex] = React.useState<number | null>(null);
+    const [currentComment, setCurrentComment] = React.useState<string>("");// 当前输入的评论
+    const [commentCounts, setCommentCounts] = React.useState<number[]>([]);
+
     const [circleName, setCircleName] = React.useState<string | null>(localStorage.getItem('circle_name') || '');
     const [posts, setPosts] = React.useState<any[]>([]); // 用于存储帖子数据
-    
+
     // 获取当前用户ID
-    const userId = localStorage.getItem('userId');
-
-
+    const userId = localStorage.getItem('userId') || '';
 
     React.useEffect(() => {
         const fetchPosts = async () => {
@@ -151,7 +139,7 @@ const View: React.FC<ViewProps> = ({ onToggleView }) => {
                     console.error('Circle name is not defined.');
                     return;
                 }
-                // 根据circleName获取circle_id
+                // 根据 circleName 获取 circle_id
                 const response = await fetch(`http://127.0.0.1:7001/circle/id?name=${encodeURIComponent(circleName)}`);
                 const data = await response.json();
                 if (response.ok) {
@@ -165,13 +153,20 @@ const View: React.FC<ViewProps> = ({ onToggleView }) => {
                         console.log('Posts Data:', postsData);
 
                         setPosts(postsData);
-                        
+
                         setLikes(postsData.map((post: any) => post.likes));
                         setLiked(postsData.map((post: any) => post.users && post.users.includes(parseInt(userId || '0'))));
-                        
-                        setComments(postsData.map(() => []));
-                        setIsDialogOpen(postsData.map(() => false));
 
+                        // 统计每个帖子的评论数量
+                        const commentCountsArray = await Promise.all(postsData.map(async (post: any) => {
+                            const countResponse = await fetch(`http://127.0.0.1:7001/comment/count?postId=${post.id}`);
+                            const countData = await countResponse.json();
+                            return countData;
+                        }));
+                        setCommentCounts(commentCountsArray);
+
+                        // 初始化评论
+                        setComments(new Array(postsData.length).fill([]));
 
                     } else {
                         console.error('Failed to fetch posts:', postsData.message);
@@ -187,10 +182,7 @@ const View: React.FC<ViewProps> = ({ onToggleView }) => {
         fetchPosts();
     }, [circleName]);
 
-
-
-
-    const handleLikeClick = async (index: number) => {  //  点赞/取消点赞
+    const handleLikeClick = async (index: number) => {  // 点赞/取消点赞
         const newLikes = [...likes];
         const newLiked = [...liked];
 
@@ -204,7 +196,6 @@ const View: React.FC<ViewProps> = ({ onToggleView }) => {
         setLikes(newLikes);
         setLiked(newLiked);
 
-        
         // 更新数据库中的点赞数
         try {
             const response = await fetch(`http://127.0.0.1:7001/post/like`, {
@@ -228,31 +219,74 @@ const View: React.FC<ViewProps> = ({ onToggleView }) => {
         }
     };
 
+    const handleCommentClick = async (index: number) => {
+        console.log(`Opening dialog for post index: ${index}`); // Debugging line
+        setDialogOpenIndex(index);
+
+        // Fetch comments for the selected post
+        try {
+            const response = await fetch(`http://127.0.0.1:7001/comment?postId=${posts[index].id}`);
+            const commentsData = await response.json();
+            if (response.ok) {
+                const newComments = [...comments];
+                newComments[index] = commentsData.map((comment: any) => comment.content);
+                setComments(newComments);
 
 
-    const handleCommentClick = (index: number) => { // 打开评论窗口
-        const newDialogState = [...isDialogOpen];
-        newDialogState[index] = true;
-        setIsDialogOpen(newDialogState);
+
+            } else {
+                console.error('Failed to fetch comments:', commentsData.message);
+            }
+        } catch (error) {
+            console.error('Error fetching comments:', error);
+        }
     };
 
-    const closeDialog = (index: number) => {  //关闭评论窗口
-        const newDialogState = [...isDialogOpen];
-        newDialogState[index] = false;
-        setIsDialogOpen(newDialogState);
+    const closeDialog = () => {  // 关闭评论窗口
+        setDialogOpenIndex(null);
         setCurrentComment("");
     };
 
-    const handleCommentChange = (event: React.ChangeEvent<HTMLInputElement>) => { //当前输入的评论
+    const handleCommentChange = (event: React.ChangeEvent<HTMLInputElement>) => { // 当前输入的评论
         setCurrentComment(event.target.value);
     };
 
-    const handleAddComment = (index: number) => {  //提交评论
-        const newComments = [...comments];
-        newComments[index] = [...newComments[index], currentComment];//更新对应的评论数组
-        setComments(newComments);// 将整个评论数组更新提交
-        closeDialog(index);
+    const handleAddComment = async () => {  // 提交评论
+        if (dialogOpenIndex === null) return; // 确保有打开的对话框
 
+        const index = dialogOpenIndex;
+        const postId = posts[index].id;
+        const authorId = parseInt(userId, 10);
+        const content = currentComment;
+
+        try {
+            const response = await fetch('http://127.0.0.1:7001/comment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ postId, authorId, content })
+            });
+
+            if (response.ok) {
+                const newComment = await response.json();
+                const newComments = [...comments];
+                newComments[index] = [...newComments[index], newComment.content];
+                setComments(newComments);
+                setCurrentComment('');
+
+                // 更新评论数量
+                const newCommentCounts = [...commentCounts];
+                newCommentCounts[index] += 1;
+                setCommentCounts(newCommentCounts);
+
+                closeDialog();
+            } else {
+                console.error('Failed to add comment');
+            }
+        } catch (error) {
+            console.error('Error adding comment', error);
+        }
     };
 
     return (
@@ -301,25 +335,24 @@ const View: React.FC<ViewProps> = ({ onToggleView }) => {
                                     </Tooltip>
                                     <span style={{ marginLeft: 8 }}>{likes[index]}</span>
                                     <Tooltip content="Comment" relationship="label">
-                                        <DialogTrigger disableButtonEnhancement>
-                                            <Button style={{ marginLeft: 24 }}
-                                                appearance="transparent"
-                                                icon={<ComposeRegular color="#87CEFA" />}
-                                                onClick={() => handleCommentClick(index)}
-                                            />
-                                        </DialogTrigger>
+                                        <Button style={{ marginLeft: 24 }}
+                                            appearance="transparent"
+                                            icon={<ComposeRegular color="#87CEFA" />}
+                                            onClick={() => handleCommentClick(index)}
+                                        />
                                     </Tooltip>
-                                    <span style={{ marginLeft: 8 }}>{comments[index].length}</span>
+                                    <span style={{ marginLeft: 8 }}>{commentCounts[index]}</span>
                                 </div>
                             </CardFooter>
                         </Card>
-                        <Dialog open={isDialogOpen[index]} onOpenChange={() => closeDialog(index)}>
+
+                        <Dialog open={dialogOpenIndex === index}>
                             <DialogSurface>
                                 <DialogBody>
                                     <DialogTitle>Comments</DialogTitle>
                                     <DialogContent>
                                         <div style={{ wordBreak: "break-all" }}>
-                                            {comments[index].map((comment, i) => (
+                                            {comments[index] && comments[index].map((comment, i) => (
                                                 <p key={i}>{comment}</p>
                                             ))}
                                         </div>
@@ -329,16 +362,16 @@ const View: React.FC<ViewProps> = ({ onToggleView }) => {
                                             value={currentComment}
                                             onChange={handleCommentChange}
                                             placeholder="Type here"
-
                                         />
                                     </DialogContent>
                                     <DialogActions>
-                                        <Button appearance="subtle" onClick={() => handleAddComment(index)}><span style={{ color: '	#1E90FF' }}>Submit</span></Button>
-                                        <Button appearance="subtle" onClick={() => closeDialog(index)}><span style={{ color: '	#C0C0C0' }}>Close</span></Button>
+                                        <Button appearance="subtle" onClick={handleAddComment}><span style={{ color: '#1E90FF' }}>Submit</span></Button>
+                                        <Button appearance="subtle" onClick={closeDialog}><span style={{ color: '#C0C0C0' }}>Close</span></Button>
                                     </DialogActions>
                                 </DialogBody>
                             </DialogSurface>
                         </Dialog>
+
                     </ListItem>
                 ))}
             </List>
