@@ -19,10 +19,10 @@ export class UserRL {
         }
     }
 
-    async createUser(phone: string, password: string) {
+    async createUser(phone: string, username: string, password: string, imageUrl: string) {
         // create user
         const id = ++this.currentId; // 获取并递增计数器
-        await this.userModel.create({ id: id, phone: phone, password: password } as User); // an "as" assertion, to have types for all properties
+        await this.userModel.create({ id: id, phone: phone, username: username, password: password, image: imageUrl } as User); // an "as" assertion, to have types for all properties
     }
 
 
@@ -36,7 +36,12 @@ export class UserRL {
         } : null;
     }
 
+    async getImageUrl(userId: number): Promise<string | null> {
+        const user = await this.userModel.findOne({ id: userId }).exec();
+        return user ? user.image : null;
+    }
 
-    
+
+
 
 }

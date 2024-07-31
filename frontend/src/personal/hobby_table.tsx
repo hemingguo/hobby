@@ -87,7 +87,13 @@ interface Item {
 }
 
 
-const Hobby_table: React.FC = () => {
+interface HobTProps {
+    onToggleView: () => void;
+
+
+}
+
+const Hobby_table: React.FC<HobTProps> = ({ onToggleView }) => {
     const classes = useStyles();
     const [value, setValue] = React.useState(1);
     const keyboardNavAttr = useArrowNavigationGroup({ axis: "grid" });
@@ -129,7 +135,7 @@ const Hobby_table: React.FC = () => {
     // 退出兴趣圈
     const handleDelete = async (id: number) => {
         const currentItemId = id;
-        
+
         if (currentItemId !== null) {
             try {
                 const response = await fetch(`http://127.0.0.1:7001/circle/removeUser`, {
@@ -147,6 +153,8 @@ const Hobby_table: React.FC = () => {
                 const data = await response.json();
                 if (data.status === "success") {
                     setItems(items.filter(item => item.id !== currentItemId));
+                    
+                    onToggleView();
                 } else {
                     console.error("Failed to delete user from circle");
                 }

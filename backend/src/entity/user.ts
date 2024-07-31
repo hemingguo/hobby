@@ -8,13 +8,19 @@ export class User {
     public id?: number;
 
     @prop()
+    public username?: string;
+
+    @prop()
+    public image?: string;
+
+    @prop()
+    public state?: string;
+
+    @prop()
     public phone?: string;
 
     @prop()
     public password?: string;
-
-    @prop()
-    public username?: string;
 
     @prop()
     public post_count?: number;

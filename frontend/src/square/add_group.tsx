@@ -145,13 +145,13 @@ const useStyles = makeStyles({
         boxShadow: "0 4px 8px rgba(0, 0, 0, 0.3)", /* Enhanced shadow for a stronger 3D effect */
         fontSize: "14px",
 
-        transition: "background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease",
+        
         clipPath: "polygon(10% 0%, 100% 10%, 90% 100%, 0% 90%)", /* Parallelogram shape */
         backdropFilter: "blur(8px)", /* Blur effect for a frosted glass appearance */
         position: "relative", /* Positioning for the animation */
         overflow: "hidden", /* Hide overflow for the gradient animation */
         fontFamily: "Bahnschrift", // 设置字体为 Bahnschrift
-
+        transition: "background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease",
         '&:hover': {
             backgroundColor: "rgba(0, 128, 255, 0.9)", /* Slightly darker on hover */
             boxShadow: "0 6px 12px rgba(0, 0, 0, 0.4)",

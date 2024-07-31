@@ -1,10 +1,8 @@
 // 该文件为个人主页面
 import { useEffect } from "react";
 import * as React from "react";
-import { Image, makeStyles, InfoLabel, InfoLabelProps, Link } from "@fluentui/react-components";
-import { Card, CardHeader, CardPreview, CardFooter, Body1, Caption1, Button } from "@fluentui/react-components";
-import { ArrowReplyRegular, ShareRegular } from "@fluentui/react-icons";
-import { List, ListItem } from "@fluentui/react-list-preview";
+import { Image, makeStyles, InfoLabel } from "@fluentui/react-components";
+
 import Hobby_table from './hobby_table.tsx'
 import Pos from './post.tsx'
 
@@ -92,13 +90,14 @@ const useStyles = makeStyles({
 
 });
 
-const Per = () => {
+const Per: React.FC = () => {
     const classes = useStyles();
     const [isPrimaryView, setIsPrimaryView] = React.useState(true);
     const [postCount, setPostCount] = React.useState<number | null>(null);
     const [circleCount, setCircleCount] = React.useState<number | null>(null);
     const [totalLikes, setTotalLikes] = React.useState<number | null>(null);
     const userId = parseInt(localStorage.getItem('userId') || '0', 10);
+    const [imageUrl, setImageUrl] = React.useState<string>("");
 
     const handleButtonClick = () => {
         const post = "true";
@@ -107,6 +106,59 @@ const Per = () => {
     };
 
 
+    useEffect(() => {
+        const fetchImageUrl = async () => {
+            try {
+                console.log("发出了请求"+ userId)
+                const response = await fetch('http://127.0.0.1:7001/home/image', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ userId }),
+                });
+                const data = await response.json();
+                if (data.status === 'success') {
+                    setImageUrl(data.imageUrl);
+                } else {
+                    console.error('Failed to fetch image URL');
+                }
+            } catch (error) {
+                console.error('Error fetching image URL:', error);
+            }
+        };
+        fetchImageUrl();
+    }, [userId]);
+
+
+    const handleToggle = () => {
+        updateCircleCount(userId);
+    }
+
+
+
+    // 更新加入的圈子数量
+    const updateCircleCount = async (userId: number) => {
+
+        try {
+            const response = await fetch('http://127.0.0.1:7001/circle/user/count', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userId }),
+            });
+            const data = await response.json();
+            if (data.status === 'success') {
+                setCircleCount(data.data);
+                console.log("删除重新渲染" + data.data)
+            } else {
+                console.error('Failed to fetch post count');
+            }
+        } catch (error) {
+            console.error('Error fetching post count:', error);
+        }
+    };
 
     useEffect(() => {
 
@@ -166,7 +218,7 @@ const Per = () => {
         // 渲染发帖共计获赞数
         const fetchTotalLikes = async () => {
             try {
-                console.log("发起一次like")
+
                 const response = await fetch('http://127.0.0.1:7001/post/user/likes', {
                     method: 'POST',
                     headers: {
@@ -211,7 +263,7 @@ const Per = () => {
                                 height={100}
                                 width={100}
                                 shape="circular"
-                                src="../../image/white.jpg"
+                                src={imageUrl}
                             />
                         </div>
                         <div className={classes.title}>
@@ -257,7 +309,7 @@ const Per = () => {
                     </div>
 
                     <div className={classes.hobbyTable}>
-                        <Hobby_table />
+                        <Hobby_table onToggleView={handleToggle} />
                     </div>
 
                 </>

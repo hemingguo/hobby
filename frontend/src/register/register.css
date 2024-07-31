@@ -57,6 +57,14 @@
     font-weight: bold;
 }
 
+.label-name {
+    font-style: italic;
+    margin-right: 30px;
+    font-size: 20px !important;
+    color: #ff8c00 !important;
+    font-weight: bold;
+}
+
 .input {
     width: 200px;
     padding: 5px;
@@ -89,3 +97,4 @@
     color: black !important;
 
 }
+

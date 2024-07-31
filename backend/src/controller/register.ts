@@ -12,8 +12,9 @@ export class RegisterController {
     }
 
     @Post('/')
-    async reg(@Body() userData: { phone: string, password: string }) {
-        await this.userRegister.createUser(userData.phone, userData.password);
+    async reg(@Body() userData: { phone: string, username: string, password: string, imageUrl: string }) {
+      
+        await this.userRegister.createUser(userData.phone, userData.username, userData.password, userData.imageUrl);
         return { message: 'User registered successfully' };
     }
 
