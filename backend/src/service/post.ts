@@ -66,8 +66,8 @@ export class PostService {
                 console.log("取消点赞 " + userId);
                 console.log("之前 " + post.users);
 
-               
-            
+
+
                 const numericUserId = Number(userId);
 
                 post.users = post.users.filter(id => id !== numericUserId);
@@ -79,4 +79,21 @@ export class PostService {
         }
         return { success: false, message: 'Post not found' };
     }
+
+    // 该用户累计发过的帖子数
+    async getPostCountByUser(userId: number): Promise<number> {
+        const count = await this.postModel.countDocuments({ author_id: userId }).exec();
+        return count;
+    }
+
+    async getTotalLikesByUser(userId: number): Promise<number> {
+        console.log(userId)
+        
+        const posts: any[] = await this.postModel.find({ author_id: userId }).exec();
+      
+        console.log(posts)
+        const totalLikes = posts.reduce((sum, post) => sum + (post.likes || 0), 0);
+        return totalLikes;
+    }
+
 }

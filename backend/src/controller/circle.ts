@@ -1,5 +1,5 @@
 // src/controller/circle.ts
-import { Controller, Get, Inject, Query, Post, Body } from '@midwayjs/core';
+import { Controller, Get, Inject, Query, Post, Body, Param } from '@midwayjs/core';
 import { CircleService } from '../service/circle';
 
 @Controller('/circle')
@@ -58,16 +58,59 @@ export class CircleController {
         const { circle_id, user_id } = body;
         console.log(body)
         try {
-            
+
             const res = await this.circleService.addUserToCircle(circle_id, user_id);
             if (res === false) {
                 return { success: true, message: 'Successfully joined the circle' };
-            }else{
+            } else {
                 return { success: true, message: 'You have joined the circle' };
             }
 
         } catch (error) {
             return { success: false, message: 'Failed to join the circle', error: error.message };
         }
+    }
+
+    @Get('/user/:id')
+    async getCirclesByUserId(@Param('id') id: number) {
+        try {
+            const circles = await this.circleService.findCirclesByUserId(id);
+
+            return {
+                status: 'success',
+                data: circles
+            };
+        } catch (error) {
+            return {
+                status: 'error',
+                message: `Failed to retrieve circles for user ${id}`,
+                error: error.message
+            };
+        }
+    }
+
+
+    @Post('/removeUser')
+    async removeUser(@Body() body: { id: number; userId: number }) {
+        console.log("删除" + body.id + body.userId)
+        const result = await this.circleService.removeUserFromCircle(body.id, body.userId);
+        if (result) {
+            return { status: 'success' };
+        } else {
+            return { status: 'fail', message: 'Failed to remove user from circle' };
+        }
+    }
+
+
+
+    @Post('/user/count')
+    async getUserCircleCount(@Body() body: { userId: number }) {
+        const { userId } = body;
+        
+        const count = await this.circleService.getCirclesCountByUser(userId);
+        return {
+            status: 'success',
+            data: count,
+        };
     }
 }

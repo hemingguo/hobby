@@ -29,5 +29,26 @@ export class PostController {
         const { id, likes, userId, liked } = body;
         return await this.postService.updateLikes(id, likes, userId, liked);
     }
-    
+
+
+    @Post('/user/count')
+    async getUserPostCount(@Body() body: { userId: number }) {
+        const { userId } = body;
+        const count = await this.postService.getPostCountByUser(userId);
+        return {
+            status: 'success',
+            data: count,
+        };
+    }
+
+    @Post('/user/likes')
+    async getUserTotalLikes(@Body() body: { userId: number }) {
+        const { userId } = body;
+       
+        const totalLikes = await this.postService.getTotalLikesByUser(userId);
+        return {
+            status: 'success',
+            data: totalLikes,
+        };
+    }
 }

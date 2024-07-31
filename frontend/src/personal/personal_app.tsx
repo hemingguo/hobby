@@ -95,19 +95,112 @@ const useStyles = makeStyles({
 const Per = () => {
     const classes = useStyles();
     const [isPrimaryView, setIsPrimaryView] = React.useState(true);
+    const [postCount, setPostCount] = React.useState<number | null>(null);
+    const [circleCount, setCircleCount] = React.useState<number | null>(null);
+    const [totalLikes, setTotalLikes] = React.useState<number | null>(null);
+    const userId = parseInt(localStorage.getItem('userId') || '0', 10);
 
     const handleButtonClick = () => {
         const post = "true";
         localStorage.setItem("post", post);
         setIsPrimaryView(!isPrimaryView);
     };
+
+
+
+    useEffect(() => {
+
+        // 渲染发帖数
+        const fetchPostCount = async () => {
+            try {
+                const response = await fetch('http://127.0.0.1:7001/post/user/count', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ userId }),
+                });
+                const data = await response.json();
+                if (data.status === 'success') {
+                    setPostCount(data.data);
+                } else {
+                    console.error('Failed to fetch post count');
+                }
+            } catch (error) {
+                console.error('Error fetching post count:', error);
+            }
+        };
+
+
+
+        fetchPostCount();
+
+    }, [userId]);
+
+    useEffect(() => {
+        // 渲染加入过的兴趣圈数量
+        const fetchCircleCount = async () => {
+
+            try {
+                const response = await fetch('http://127.0.0.1:7001/circle/user/count', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ userId }),
+                });
+                const data = await response.json();
+                if (data.status === 'success') {
+                    setCircleCount(data.data);
+                } else {
+                    console.error('Failed to fetch post count');
+                }
+            } catch (error) {
+                console.error('Error fetching post count:', error);
+            }
+        };
+        fetchCircleCount();
+    }, [userId]);
+
+    useEffect(() => {
+        // 渲染发帖共计获赞数
+        const fetchTotalLikes = async () => {
+            try {
+                console.log("发起一次like")
+                const response = await fetch('http://127.0.0.1:7001/post/user/likes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ userId }),
+                });
+                const data = await response.json();
+                if (data.status === 'success') {
+                    setTotalLikes(data.data);
+                } else {
+                    console.error('Failed to fetch total likes');
+                }
+            } catch (error) {
+                console.error('Error fetching total likes:', error);
+            }
+        };
+
+
+
+        fetchTotalLikes();
+    }, [userId]);
+
+
+
     useEffect(() => {
         document.body.style.overflow = 'hidden';
         return () => {
             document.body.style.overflow = 'auto';
         };
     }, []);
-    
+
+
+
     return (
         <div>
             {isPrimaryView ? (
@@ -143,9 +236,15 @@ const Per = () => {
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td className={`${classes.tableCell} ${classes.headerCell}`}>Data 1</td>
-                                        <td className={`${classes.tableCell} ${classes.headerCell}`}>Data 2</td>
-                                        <td className={`${classes.tableCell} ${classes.headerCell}`}>Data 3</td>
+                                        <td className={`${classes.tableCell} ${classes.headerCell}`}>
+                                            {postCount !== null ? postCount : 'Loading...'}
+                                        </td>
+                                        <td className={`${classes.tableCell} ${classes.headerCell}`}>
+                                            {circleCount !== null ? circleCount : 'Loading...'}
+                                        </td>
+                                        <td className={`${classes.tableCell} ${classes.headerCell}`}>
+                                            {totalLikes !== null ? totalLikes : 'Loading...'}
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>

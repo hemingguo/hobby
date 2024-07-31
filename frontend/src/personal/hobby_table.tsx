@@ -2,13 +2,7 @@
 
 import * as React from "react";
 import {
-    FolderRegular,
-    EditRegular,
-    OpenRegular,
-    DocumentRegular,
-    PeopleRegular,
-    DocumentPdfRegular,
-    VideoRegular,
+
     DeleteRegular,
     ArrowForwardRegular,
 } from "@fluentui/react-icons";
@@ -26,56 +20,18 @@ import {
     Button,
     useArrowNavigationGroup,
     useFocusableGroup,
+    Dialog,
+    DialogTrigger,
+    DialogContent,
+    DialogTitle,
+    DialogActions,
+    DialogBody,
+    DialogSurface,
 } from "@fluentui/react-components";
 import View from "./smallview";
 
 
-const items = [
-    {
-        name: { label: "Game", icon: <DocumentRegular /> },
-        creator: { label: "Max Mustermann", status: "available" },
-        totalNumber: { label: "7", timestamp: 1 },
-        activeNumber: {
-            label: "6",
-            icon: <EditRegular />,
-        },
-        nsrc: "../../image/white.jpg",
-        psrc: "../../image/white.jpg",
-    },
-    {
-        name: { label: "Sports", icon: <FolderRegular /> },
-        creator: { label: "Erika Mustermann", status: "busy" },
-        totalNumber: { label: "4", timestamp: 2 },
-        activeNumber: {
-            label: "0",
-            icon: <OpenRegular />,
-        },
-        nsrc: "../../image/white.jpg",
-        psrc: "../../image/white.jpg",
-    },
-    {
-        name: { label: "Painting", icon: <VideoRegular /> },
-        creator: { label: "John Doe", status: "away" },
-        totalNumber: { label: "8", timestamp: 2 },
-        activeNumber: {
-            label: "4",
-            icon: <OpenRegular />,
-        },
-        nsrc: "../../image/white.jpg",
-        psrc: "../../image/white.jpg",
-    },
-    {
-        name: { label: "Music", icon: <DocumentPdfRegular /> },
-        creator: { label: "Jane Doe", status: "offline" },
-        totalNumber: { label: "20", timestamp: 3 },
-        activeNumber: {
-            label: "14",
-            icon: <PeopleRegular />,
-        },
-        nsrc: "../../image/white.jpg",
-        psrc: "../../image/white.jpg",
-    },
-];
+
 
 const columns = [
     { columnKey: "name", label: "Name" },
@@ -117,16 +73,89 @@ const useStyles = makeStyles({
 
 })
 
-const Hobby_table = () => {
+interface Item {
+    _id: string;
+    id: number;
+    name: string;
+    author_id: number;
+    description: string;
+    created_at: string;
+    updated_at: string;
+    users: number[];
+    imageUrl: string;
+    __v: number;
+}
+
+
+const Hobby_table: React.FC = () => {
     const classes = useStyles();
     const [value, setValue] = React.useState(1);
     const keyboardNavAttr = useArrowNavigationGroup({ axis: "grid" });
     const focusableGroupAttr = useFocusableGroup({
         tabBehavior: "limited-trap-focus",
     });
-    const handleJump = () => {
+    const Id = localStorage.getItem("userId") || '';
+    const userId = parseInt(Id, 10);
+    // 获取用户加入的集合数据
+    const [items, setItems] = React.useState<Item[]>([]);
+
+
+    React.useEffect(() => {
+        const fetchCircles = async () => {
+            try {
+
+                const response = await fetch(`http://127.0.0.1:7001/circle/user/${userId}`);
+                const data = await response.json();
+                if (data.status === "success") {
+                    setItems(data.data);
+                } else {
+                    console.error("Failed to fetch circles");
+                }
+            } catch (error) {
+                console.error("Error fetching circles:", error);
+            }
+        };
+
+        fetchCircles();
+    }, [userId]);
+
+    // 用户要查看的兴趣圈id
+    const [selectedId, setSelectedId] = React.useState<number | null>(null);
+    const handleJump = (id: number) => {
+        setSelectedId(id);
         setValue(2);
+    };
+
+    // 退出兴趣圈
+    const handleDelete = async (id: number) => {
+        const currentItemId = id;
+        
+        if (currentItemId !== null) {
+            try {
+                const response = await fetch(`http://127.0.0.1:7001/circle/removeUser`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(
+                        {
+                            id: currentItemId,
+                            userId: userId,
+                        }
+                    ),
+                });
+                const data = await response.json();
+                if (data.status === "success") {
+                    setItems(items.filter(item => item.id !== currentItemId));
+                } else {
+                    console.error("Failed to delete user from circle");
+                }
+            } catch (error) {
+                console.error("Error deleting user from circle:", error);
+            }
+        };
     }
+
     return (
         <>
             {value === 1
@@ -154,20 +183,19 @@ const Hobby_table = () => {
                     </TableHeader>
 
                     <TableBody>
-                        {items.map((item) => (
-                            <TableRow key={item.name.label} className={classes.row}>
+                        {items.map((item, index) => (
+                            <TableRow key={index} className={classes.row}>
 
                                 <TableCell tabIndex={0} role="gridcell">
                                     <TableCellLayout className={classes.name} media={
                                         <Avatar
                                             shape="square"
-                                            image={{ src: item.nsrc }}
-                                            aria-label={item.creator.label}
-                                            name={item.creator.label}
+                                            image={{ src: item.imageUrl }}
+                                            name={item.name}
 
                                         />
                                     }>
-                                        {item.name.label}
+                                        {item.name}
                                     </TableCellLayout>
                                 </TableCell>
 
@@ -176,39 +204,68 @@ const Hobby_table = () => {
                                         className={classes.people}
                                         media={
                                             <Avatar
-                                                image={{ src: item.psrc }}
-                                                aria-label={item.creator.label}
-                                                name={item.creator.label}
-                                                badge={{
-                                                    status: item.creator.status as PresenceBadgeStatus,
-                                                }}
+                                            //image={{ src: item.psrc }}
+
+
+                                            // TODO badge={{
+                                            //     status: item.creator.status as PresenceBadgeStatus,
+                                            // }}
                                             />
                                         }
                                     >
-                                        {item.creator.label}
+                                        {item.author_id}
                                     </TableCellLayout>
                                 </TableCell>
 
                                 <TableCell tabIndex={0} role="gridcell" className={classes.totalNumber}>
-                                    {item.totalNumber.label}
+                                    {item.users.length}
                                 </TableCell>
 
                                 <TableCell tabIndex={0} role="gridcell" className={classes.activeNumber}>
-                                    {item.activeNumber.label}
+                                    {3}
                                 </TableCell>
 
                                 <TableCell role="gridcell" tabIndex={0} {...focusableGroupAttr}>
                                     <TableCellLayout>
-                                        <Button appearance="transparent" className={classes.button} onClick={handleJump} icon={<ArrowForwardRegular />} aria-label="Look" />
-                                        <Button appearance="transparent" className={classes.button} icon={<DeleteRegular />} aria-label="Delete" />
+                                        <Button appearance="transparent" className={classes.button} onClick={() => handleJump(item.id)} icon={<ArrowForwardRegular />} aria-label="Look" />
+                                        <Dialog>
+                                            <DialogTrigger disableButtonEnhancement>
+                                                <Button appearance="transparent" className={classes.button} icon={<DeleteRegular />} aria-label="Delete" />
+                                            </DialogTrigger>
+                                            <DialogSurface>
+
+                                                <DialogBody>
+                                                    <DialogTitle>Confirm</DialogTitle>
+
+                                                    <DialogContent>
+                                                        Are you sure you want to delete this interest group?
+                                                    </DialogContent>
+
+                                                    <DialogActions>
+
+                                                        <DialogTrigger disableButtonEnhancement>
+                                                            <Button onClick={() => handleDelete(item.id)} appearance="primary">Yes</Button>
+                                                        </DialogTrigger>
+                                                        <DialogTrigger disableButtonEnhancement>
+                                                            <Button appearance="secondary">Not yet</Button>
+                                                        </DialogTrigger>
+
+
+                                                    </DialogActions>
+                                                </DialogBody>
+
+                                            </DialogSurface>
+                                        </Dialog>
+
                                     </TableCellLayout>
                                 </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
-                : <View onToggleView={() => setValue(1)} />
+                : <View onToggleView={() => setValue(1)} id={selectedId} />
             }
+
         </>
     );
 };

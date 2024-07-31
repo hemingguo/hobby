@@ -36,15 +36,47 @@ export class CircleService {
             throw new Error('Circle not found');
         }
 
-        
+
 
         if (!circle.users.includes(user_id)) {
-            
+
             circle.users.push(user_id);
             await circle.save();
             return joined;
         }
         joined = true;
         return joined;
+    }
+
+    // 返回该用户加入的所有兴趣圈
+    async findCirclesByUserId(userId: number) {
+
+        return await this.circleModel.find({ users: userId }).exec();
+
+    }
+
+    async removeUserFromCircle(circleId: number, userId: number): Promise<boolean> {
+        try {
+            const circle = await this.circleModel.findOne({ id: circleId });
+            if (!circle) return false;
+
+            const userIndex = circle.users.indexOf(userId);
+            if (userIndex > -1) {
+                circle.users.splice(userIndex, 1);
+                await circle.save();
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error('Error removing user from circle:', error);
+            return false;
+        }
+    }
+
+
+    async getCirclesCountByUser(userId: number): Promise<number> {
+        
+        const count = await this.circleModel.countDocuments({ users: userId }).exec();
+        return count;
     }
 }

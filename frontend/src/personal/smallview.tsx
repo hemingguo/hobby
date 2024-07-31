@@ -12,7 +12,7 @@ import {
     Button,
     Tooltip,
     Dialog,
-   
+    Spinner,
     DialogSurface,
     DialogTitle,
     DialogBody,
@@ -98,6 +98,32 @@ const useStyles = makeStyles({
     input: {
         width: "65%",
         marginTop: "50px",
+    },
+    noPostsContainer: {
+        position: "relative",
+        top: "50%",
+        left: "50%",
+        marginTop: "100px",
+        transform: "translate(-50%, -50%)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "200px",
+        backgroundColor: "#f7f7f7",
+        borderRadius: "10px",
+        boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
+        padding: "20px",
+    },
+    noPostsMessage: {
+        fontSize: "1.5em",
+        color: "#757575",
+        textAlign: "center",
+    },
+    loading: {
+        position: "fixed",
+        top: "320px",
+        marginLeft: "365px",
+
     }
 });
 
@@ -105,13 +131,14 @@ const useStyles = makeStyles({
 
 interface ViewProps {
     onToggleView: () => void;
+    id: number | null;
 }
 
-const View: React.FC<ViewProps> = ({ onToggleView }) => {
+const View: React.FC<ViewProps> = ({ onToggleView, id }) => {
     const handleButtonClick = () => {
         onToggleView();
     };
-
+    const circle_id = id;
     const classes = useStyles();
 
     // 表示点赞情况
@@ -126,57 +153,42 @@ const View: React.FC<ViewProps> = ({ onToggleView }) => {
 
     const [circleName, setCircleName] = React.useState<string | null>(localStorage.getItem('circle_name') || '');
     const [posts, setPosts] = React.useState<any[]>([]); // 用于存储帖子数据
-
+    const [s, setS] = React.useState(false); // 表示是否接收到数据库
     // 获取当前用户ID
     const userId = localStorage.getItem('userId') || '';
 
     React.useEffect(() => {
         const fetchPosts = async () => {
             try {
-                // 确保 circleName 不为 null
-                if (!circleName) {
-                    console.error('Circle name is not defined.');
-                    return;
-                }
-                // 根据 circleName 获取 circle_id
-                const response = await fetch(`http://127.0.0.1:7001/circle/id?name=${encodeURIComponent(circleName)}`);
-                const data = await response.json();
-                if (response.ok) {
-                    const circle_id = data.id;
-                    console.log(data.id);
+                // 根据 circle_id 获取帖子数据
+                const postsResponse = await fetch(`http://127.0.0.1:7001/post/circle?circle_id=${circle_id}`);
+                const postsData = await postsResponse.json();
+                if (postsResponse.ok) {
+                    console.log('Posts Data:', postsData);
 
-                    // 根据 circle_id 获取帖子数据
-                    const postsResponse = await fetch(`http://127.0.0.1:7001/post/circle?circle_id=${circle_id}`);
-                    const postsData = await postsResponse.json();
-                    if (postsResponse.ok) {
-                        console.log('Posts Data:', postsData);
+                    setPosts(postsData);
 
-                        setPosts(postsData);
+                    setLikes(postsData.map((post: any) => post.likes));
+                    setLiked(postsData.map((post: any) => post.users && post.users.includes(parseInt(userId || '0'))));
 
-                        setLikes(postsData.map((post: any) => post.likes));
-                        setLiked(postsData.map((post: any) => post.users && post.users.includes(parseInt(userId || '0'))));
+                    // 统计每个帖子的评论数量
+                    const commentCountsArray = await Promise.all(postsData.map(async (post: any) => {
+                        const countResponse = await fetch(`http://127.0.0.1:7001/comment/count?postId=${post.id}`);
+                        const countData = await countResponse.json();
+                        return countData;
+                    }));
+                    setCommentCounts(commentCountsArray);
 
-                        // 统计每个帖子的评论数量
-                        const commentCountsArray = await Promise.all(postsData.map(async (post: any) => {
-                            const countResponse = await fetch(`http://127.0.0.1:7001/comment/count?postId=${post.id}`);
-                            const countData = await countResponse.json();
-                            return countData;
-                        }));
-                        setCommentCounts(commentCountsArray);
-
-                        // 初始化评论
-                        setComments(new Array(postsData.length).fill([]));
-
-                    } else {
-                        console.error('Failed to fetch posts:', postsData.message);
-                    }
+                    // 初始化评论
+                    setComments(new Array(postsData.length).fill([]));
+                    setS(true)
                 } else {
-                    console.error('Failed to fetch posts:', data.message);
+                    console.error('Failed to fetch posts:', postsData.message);
                 }
             } catch (error) {
-                console.error('Error fetching posts:', error);
+                console.error("error!")
             }
-        };
+        }
 
         fetchPosts();
     }, [circleName]);
@@ -295,87 +307,112 @@ const View: React.FC<ViewProps> = ({ onToggleView }) => {
             <button className={classes.roundButton} onClick={handleButtonClick}>
                 <ArrowReply28Filled />
             </button>
+            {s === false
+                ?
+                // 加载中
+                <>
+                    <div className={classes.loading}><Spinner /></div>
+                </>
+                :
+                <>
 
-
-
-            <List className={classes.list} navigationMode="items">
-                {posts.map((post, index) => (
-                    <ListItem className={classes.card} key={post.id}>
-                        <Card className={classes.content}>
-                            <CardHeader
-                                image={
-                                    <img
-                                        src={post.imageUrl}
-                                        height={50}
-                                        width={50}
-                                        alt="Profile"
-                                    />
-                                }
-                                header={
-                                    <Body1>
-                                        <b className={classes.name}>{post.author_id}</b>
-                                    </Body1>
-                                }
-                                description={<Caption1 className={classes.des}>{post.created_at}</Caption1>}
-                            />
-
-                            <CardPreview className={classes.main}>
-                                {post.content}
-                            </CardPreview >
-
-                            <CardFooter>
-                                <div style={{ display: "flex", alignItems: "center" }}>
-                                    <Tooltip content="Like" relationship="label">
-                                        <Button
-                                            appearance="transparent"
-                                            onClick={() => handleLikeClick(index)}
-                                            icon={liked[index]
-                                                ? <ThumbLikeFilled color="#00BFFF" />
-                                                : <ThumbLikeRegular color="#87CEFA" />}
-                                        />
-                                    </Tooltip>
-                                    <span style={{ marginLeft: 8 }}>{likes[index]}</span>
-                                    <Tooltip content="Comment" relationship="label">
-                                        <Button style={{ marginLeft: 24 }}
-                                            appearance="transparent"
-                                            icon={<ComposeRegular color="#87CEFA" />}
-                                            onClick={() => handleCommentClick(index)}
-                                        />
-                                    </Tooltip>
-                                    <span style={{ marginLeft: 8 }}>{commentCounts[index]}</span>
+                    {posts.length === 0
+                        ? // 没有帖子就告知无
+                        <>
+                            <div className={classes.noPostsContainer}>
+                                <div className={classes.noPostsMessage}>
+                                    No posts available.
                                 </div>
-                            </CardFooter>
-                        </Card>
+                            </div>
 
-                        <Dialog open={dialogOpenIndex === index}>
-                            <DialogSurface>
-                                <DialogBody>
-                                    <DialogTitle>Comments</DialogTitle>
-                                    <DialogContent>
-                                        <div style={{ wordBreak: "break-all" }}>
-                                            {comments[index] && comments[index].map((comment, i) => (
-                                                <p key={i}>{comment}</p>
-                                            ))}
-                                        </div>
-                                        <Input
-                                            appearance="filled-lighter-shadow"
-                                            className={classes.input}
-                                            value={currentComment}
-                                            onChange={handleCommentChange}
-                                            placeholder="Type here"
-                                        />
-                                    </DialogContent>
-                                    <DialogActions>
-                                        <Button appearance="subtle" onClick={handleAddComment}><span style={{ color: '#1E90FF' }}>Submit</span></Button>
-                                        <Button appearance="subtle" onClick={closeDialog}><span style={{ color: '#C0C0C0' }}>Close</span></Button>
-                                    </DialogActions>
-                                </DialogBody>
-                            </DialogSurface>
-                        </Dialog>
+                        </>
+                        : // 有帖子就渲染
+                        <>
+                            <List className={classes.list} navigationMode="items">
+                                {posts.map((post, index) => (
+                                    <ListItem className={classes.card} key={post.id}>
+                                        <Card className={classes.content}>
+                                            <CardHeader
+                                                image={
+                                                    <img
+                                                        src={post.imageUrl}
+                                                        height={50}
+                                                        width={50}
+                                                        alt="Profile"
+                                                    />
+                                                }
+                                                header={
+                                                    <Body1>
+                                                        <b className={classes.name}>{post.author_id}</b>
+                                                    </Body1>
+                                                }
+                                                description={<Caption1 className={classes.des}>{post.created_at}</Caption1>}
+                                            />
 
-                    </ListItem>
-                ))}
-            </List>
+                                            <CardPreview className={classes.main}>
+                                                {post.content}
+                                            </CardPreview >
+
+                                            <CardFooter>
+                                                <div style={{ display: "flex", alignItems: "center" }}>
+                                                    <Tooltip content="Like" relationship="label">
+                                                        <Button
+                                                            appearance="transparent"
+                                                            onClick={() => handleLikeClick(index)}
+                                                            icon={liked[index]
+                                                                ? <ThumbLikeFilled color="#00BFFF" />
+                                                                : <ThumbLikeRegular color="#87CEFA" />}
+                                                        />
+                                                    </Tooltip>
+                                                    <span style={{ marginLeft: 8 }}>{likes[index]}</span>
+                                                    <Tooltip content="Comment" relationship="label">
+                                                        <Button style={{ marginLeft: 24 }}
+                                                            appearance="transparent"
+                                                            icon={<ComposeRegular color="#87CEFA" />}
+                                                            onClick={() => handleCommentClick(index)}
+                                                        />
+                                                    </Tooltip>
+                                                    <span style={{ marginLeft: 8 }}>{commentCounts[index]}</span>
+                                                </div>
+                                            </CardFooter>
+                                        </Card>
+
+                                        <Dialog open={dialogOpenIndex === index}>
+                                            <DialogSurface>
+                                                <DialogBody>
+                                                    <DialogTitle>Comments</DialogTitle>
+                                                    <DialogContent>
+                                                        <div style={{ wordBreak: "break-all" }}>
+                                                            {comments[index] && comments[index].map((comment, i) => (
+                                                                <p key={i}>{comment}</p>
+                                                            ))}
+                                                        </div>
+                                                        <Input
+                                                            appearance="filled-lighter-shadow"
+                                                            className={classes.input}
+                                                            value={currentComment}
+                                                            onChange={handleCommentChange}
+                                                            placeholder="Type here"
+                                                        />
+                                                    </DialogContent>
+                                                    <DialogActions>
+                                                        <Button appearance="subtle" onClick={handleAddComment}><span style={{ color: '#1E90FF' }}>Submit</span></Button>
+                                                        <Button appearance="subtle" onClick={closeDialog}><span style={{ color: '#C0C0C0' }}>Close</span></Button>
+                                                    </DialogActions>
+                                                </DialogBody>
+                                            </DialogSurface>
+                                        </Dialog>
+
+                                    </ListItem>
+                                ))}
+                            </List>
+                        </>
+                    }
+                </>
+
+            }
+
+
         </>
     );
 };

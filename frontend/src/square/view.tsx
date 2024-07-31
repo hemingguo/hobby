@@ -12,7 +12,7 @@ import {
     Button,
     Tooltip,
     Dialog,
-
+    Spinner,
     DialogSurface,
     DialogTitle,
     DialogBody,
@@ -101,6 +101,32 @@ const useStyles = makeStyles({
         wordWrap: "break-word", /* Allows long words to break and wrap onto the next line */
         overflowWrap: "break-word", /* Handles wrapping of long words */
         whiteSpace: "normal", /* Ensures text will wrap normally */
+    },
+    noPostsContainer: {
+        position: "relative",
+        top: "30%",
+        left: "90%",
+
+        transform: "translate(-50%, -50%)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "200px",
+        backgroundColor: "#f7f7f7",
+        borderRadius: "10px",
+        boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
+        padding: "20px",
+    },
+    noPostsMessage: {
+        fontSize: "1.5em",
+        color: "#757575",
+        textAlign: "center",
+    },
+    loading: {
+        position: "fixed",
+        top: "250px",
+        marginLeft: "520px",
+
     }
 });
 
@@ -127,7 +153,7 @@ const View: React.FC<ViewProps> = ({ onToggleView }) => {
 
     const [circleName, setCircleName] = React.useState<string | null>(localStorage.getItem('circle_name') || '');
     const [posts, setPosts] = React.useState<any[]>([]); // 用于存储帖子数据
-
+    const [s, setS] = React.useState(false); // 表示是否接收到数据库
     // 获取当前用户ID
     const userId = localStorage.getItem('userId') || '';
 
@@ -167,6 +193,7 @@ const View: React.FC<ViewProps> = ({ onToggleView }) => {
 
                         // 初始化评论
                         setComments(new Array(postsData.length).fill([]));
+                        setS(true);
 
                     } else {
                         console.error('Failed to fetch posts:', postsData.message);
@@ -180,7 +207,11 @@ const View: React.FC<ViewProps> = ({ onToggleView }) => {
         };
 
         fetchPosts();
+
+
+
     }, [circleName]);
+
 
     const handleLikeClick = async (index: number) => {  // 点赞/取消点赞
         const newLikes = [...likes];
@@ -296,85 +327,110 @@ const View: React.FC<ViewProps> = ({ onToggleView }) => {
             </button>
 
             <div className={classes.title}>~~ Posts ~~</div>
+            {s === false
+                ?
+                // 加载中
+                <>
+                    <div className={classes.loading}><Spinner /></div>
+                </>
+                :
+                <> {posts.length === 0
+                    ? // 没有帖子就告知无
+                    <>
+                        <div className={classes.noPostsContainer}>
+                            <div className={classes.noPostsMessage}>
+                                No posts available.
+                            </div>
+                        </div>
 
-            <List className={classes.list} navigationMode="items">
-                {posts.map((post, index) => (
-                    <ListItem className={classes.card} key={post.id}>
-                        <Card className={classes.content}>
-                            <CardHeader
-                                image={
-                                    <img
-                                        src={post.imageUrl}
-                                        height={50}
-                                        width={50}
-                                        alt="Profile"
-                                    />
-                                }
-                                header={
-                                    <Body1>
-                                        <b className={classes.name}>{post.author_id}</b>
-                                    </Body1>
-                                }
-                                description={<Caption1 className={classes.des}>{post.created_at}</Caption1>}
-                            />
+                    </>
+                    : // 有帖子就渲染
+                    <>
 
-                            <CardPreview className={classes.main}>
-                                {post.content}
-                            </CardPreview >
-
-                            <CardFooter>
-                                <div style={{ display: "flex", alignItems: "center" }}>
-                                    <Tooltip content="Like" relationship="label">
-                                        <Button
-                                            appearance="transparent"
-                                            onClick={() => handleLikeClick(index)}
-                                            icon={liked[index]
-                                                ? <ThumbLikeFilled color="#00BFFF" />
-                                                : <ThumbLikeRegular color="#87CEFA" />}
+                        <List className={classes.list} navigationMode="items">
+                            {posts.map((post, index) => (
+                                <ListItem className={classes.card} key={post.id}>
+                                    <Card className={classes.content}>
+                                        <CardHeader
+                                            image={
+                                                <img
+                                                    src={post.imageUrl}
+                                                    height={50}
+                                                    width={50}
+                                                    alt="Profile"
+                                                />
+                                            }
+                                            header={
+                                                <Body1>
+                                                    <b className={classes.name}>{post.author_id}</b>
+                                                </Body1>
+                                            }
+                                            description={<Caption1 className={classes.des}>{post.created_at}</Caption1>}
                                         />
-                                    </Tooltip>
-                                    <span style={{ marginLeft: 8 }}>{likes[index]}</span>
-                                    <Tooltip content="Comment" relationship="label">
-                                        <Button style={{ marginLeft: 24 }}
-                                            appearance="transparent"
-                                            icon={<ComposeRegular color="#87CEFA" />}
-                                            onClick={() => handleCommentClick(index)}
-                                        />
-                                    </Tooltip>
-                                    <span style={{ marginLeft: 8 }}>{commentCounts[index]}</span>
-                                </div>
-                            </CardFooter>
-                        </Card>
 
-                        <Dialog open={dialogOpenIndex === index}>
-                            <DialogSurface>
-                                <DialogBody>
-                                    <DialogTitle>Comments</DialogTitle>
-                                    <DialogContent>
-                                        <div style={{ wordBreak: "break-all" }}>
-                                            {comments[index] && comments[index].map((comment, i) => (
-                                                <p key={i}>{comment}</p>
-                                            ))}
-                                        </div>
-                                        <Input
-                                            appearance="filled-lighter-shadow"
-                                            className={classes.input}
-                                            value={currentComment}
-                                            onChange={handleCommentChange}
-                                            placeholder="Type here"
-                                        />
-                                    </DialogContent>
-                                    <DialogActions>
-                                        <Button appearance="subtle" onClick={handleAddComment}><span style={{ color: '#1E90FF' }}>Submit</span></Button>
-                                        <Button appearance="subtle" onClick={closeDialog}><span style={{ color: '#C0C0C0' }}>Close</span></Button>
-                                    </DialogActions>
-                                </DialogBody>
-                            </DialogSurface>
-                        </Dialog>
+                                        <CardPreview className={classes.main}>
+                                            {post.content}
+                                        </CardPreview >
 
-                    </ListItem>
-                ))}
-            </List>
+                                        <CardFooter>
+                                            <div style={{ display: "flex", alignItems: "center" }}>
+                                                <Tooltip content="Like" relationship="label">
+                                                    <Button
+                                                        appearance="transparent"
+                                                        onClick={() => handleLikeClick(index)}
+                                                        icon={liked[index]
+                                                            ? <ThumbLikeFilled color="#00BFFF" />
+                                                            : <ThumbLikeRegular color="#87CEFA" />}
+                                                    />
+                                                </Tooltip>
+                                                <span style={{ marginLeft: 8 }}>{likes[index]}</span>
+                                                <Tooltip content="Comment" relationship="label">
+                                                    <Button style={{ marginLeft: 24 }}
+                                                        appearance="transparent"
+                                                        icon={<ComposeRegular color="#87CEFA" />}
+                                                        onClick={() => handleCommentClick(index)}
+                                                    />
+                                                </Tooltip>
+                                                <span style={{ marginLeft: 8 }}>{commentCounts[index]}</span>
+                                            </div>
+                                        </CardFooter>
+                                    </Card>
+
+                                    <Dialog open={dialogOpenIndex === index}>
+                                        <DialogSurface>
+                                            <DialogBody>
+                                                <DialogTitle>Comments</DialogTitle>
+                                                <DialogContent>
+                                                    <div style={{ wordBreak: "break-all" }}>
+                                                        {comments[index] && comments[index].map((comment, i) => (
+                                                            <p key={i}>{comment}</p>
+                                                        ))}
+                                                    </div>
+                                                    <Input
+                                                        appearance="filled-lighter-shadow"
+                                                        className={classes.input}
+                                                        value={currentComment}
+                                                        onChange={handleCommentChange}
+                                                        placeholder="Type here"
+                                                    />
+                                                </DialogContent>
+                                                <DialogActions>
+                                                    <Button appearance="subtle" onClick={handleAddComment}><span style={{ color: '#1E90FF' }}>Submit</span></Button>
+                                                    <Button appearance="subtle" onClick={closeDialog}><span style={{ color: '#C0C0C0' }}>Close</span></Button>
+                                                </DialogActions>
+                                            </DialogBody>
+                                        </DialogSurface>
+                                    </Dialog>
+
+                                </ListItem>
+                            ))}
+                        </List>
+                    </>
+                }</>
+
+            }
+
+
         </>
     );
 };
