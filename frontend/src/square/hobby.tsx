@@ -72,11 +72,11 @@ interface HobProps {
     created: string;
     updated: string;
     imageUrl: string;
-
+    circle_id : number;
 
 }
 
-const Hob: React.FC<HobProps> = ({ title, author_id, description, created, updated, imageUrl, onToggleView }) => {
+const Hob: React.FC<HobProps> = ({ circle_id, title, author_id, description, created, updated, imageUrl, onToggleView }) => {
     const styles = useStyles();
 
     const handleClick = () => {
@@ -115,7 +115,7 @@ const Hob: React.FC<HobProps> = ({ title, author_id, description, created, updat
 
                 <Button onClick={handleClick} appearance="subtle" icon={<SendRegular fontSize={16} />}>Look</Button>
 
-                <Dia />
+                <Dia circle_id = {circle_id}/>
             </CardFooter>
         </Card>
     );

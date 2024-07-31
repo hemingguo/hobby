@@ -77,6 +77,7 @@ const HobG: React.FC<HobGProps> = ({ onToggleView }) => {
                     key={profile.id}
                 >
                     <Hob
+                        circle_id ={profile.id}
                         title={profile.name}
                         author_id={profile.author_id}
                         description={profile.description}
