@@ -85,7 +85,11 @@ interface Item {
     imageUrl: string;
     __v: number;
 }
-
+interface AuthorInfo {
+    userId: number;
+    image: string;
+    username: string;
+}
 
 interface HobTProps {
     onToggleView: () => void;
@@ -104,16 +108,23 @@ const Hobby_table: React.FC<HobTProps> = ({ onToggleView }) => {
     const userId = parseInt(Id, 10);
     // 获取用户加入的集合数据
     const [items, setItems] = React.useState<Item[]>([]);
+    const [userImages, setUserImages] = React.useState<{ [key: number]: string }>({});
+    const [usernames, setUsernames] = React.useState<{ [key: number]: string }>({});
+    const [authorsInfo, setAuthorsInfo] = React.useState<{ [key: number]: AuthorInfo }>({});
 
 
     React.useEffect(() => {
         const fetchCircles = async () => {
             try {
-
+                // 获取加入的兴趣圈
                 const response = await fetch(`http://127.0.0.1:7001/circle/user/${userId}`);
                 const data = await response.json();
                 if (data.status === "success") {
                     setItems(data.data);
+                    const authorIds = data.data.map((item: Item) => item.author_id);
+
+                    fetchAuthorsInfo(authorIds);
+
                 } else {
                     console.error("Failed to fetch circles");
                 }
@@ -122,6 +133,31 @@ const Hobby_table: React.FC<HobTProps> = ({ onToggleView }) => {
             }
         };
 
+        const fetchAuthorsInfo = async (authorIds: number[]) => {
+            try {
+                const response = await fetch(`http://127.0.0.1:7001/home/users`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ userIds: authorIds }),
+                });
+                const data = await response.json();
+
+                if (data.status === "success") {
+                    // 直接将获取的数据设置到状态中
+                    const authorsInfoMap: { [key: number]: AuthorInfo } = data.data;
+                    console.log("Fetched dusers: ", JSON.stringify(authorsInfoMap, null, 2)); // 打印具体信息
+                    setAuthorsInfo(authorsInfoMap);
+                   
+                   
+                } else {
+                    console.error("Failed to fetch authors info");
+                }
+            } catch (error) {
+                console.error("Error fetching authors info:", error);
+            }
+        };
         fetchCircles();
     }, [userId]);
 
@@ -130,6 +166,7 @@ const Hobby_table: React.FC<HobTProps> = ({ onToggleView }) => {
     const handleJump = (id: number) => {
         setSelectedId(id);
         setValue(2);
+        
     };
 
     // 退出兴趣圈
@@ -153,7 +190,7 @@ const Hobby_table: React.FC<HobTProps> = ({ onToggleView }) => {
                 const data = await response.json();
                 if (data.status === "success") {
                     setItems(items.filter(item => item.id !== currentItemId));
-                    
+
                     onToggleView();
                 } else {
                     console.error("Failed to delete user from circle");
@@ -212,7 +249,7 @@ const Hobby_table: React.FC<HobTProps> = ({ onToggleView }) => {
                                         className={classes.people}
                                         media={
                                             <Avatar
-                                            //image={{ src: item.psrc }}
+                                                image={{ src: authorsInfo[item.author_id] ? authorsInfo[item.author_id].image : '' }}
 
 
                                             // TODO badge={{
@@ -221,7 +258,11 @@ const Hobby_table: React.FC<HobTProps> = ({ onToggleView }) => {
                                             />
                                         }
                                     >
-                                        {item.author_id}
+                                        {authorsInfo[item.author_id] ? (
+                                            authorsInfo[item.author_id].username
+                                        ) : (
+                                            "Loading..."  // 数据尚未加载完成时显示的内容
+                                        )}
                                     </TableCellLayout>
                                 </TableCell>
 
