@@ -274,8 +274,24 @@ const Per: React.FC = () => {
                             <table className={classes.tableElement}>
                                 <thead>
                                     <tr>
-                                        <th className={`${classes.tableCell2} ${classes.headerCell}`}>Posts</th>
-                                        <th className={`${classes.tableCell2} ${classes.headerCell}`}>Groups</th>
+                                        <th className={`${classes.tableCell2} ${classes.headerCell}`}>Posts<InfoLabel size="small"
+                                            info={
+                                                <>
+                                                    It shows how many posts you have shared.
+                                                </>
+                                            }
+
+                                        >
+                                        </InfoLabel></th>
+                                        <th className={`${classes.tableCell2} ${classes.headerCell}`}>Groups<InfoLabel size="small"
+                                            info={
+                                                <>
+                                                    It shows how many groups you have joined.
+                                                </>
+                                            }
+
+                                        >
+                                        </InfoLabel></th>
                                         <th className={`${classes.tableCell2} ${classes.headerCell}`}>Likes<InfoLabel size="small"
                                             info={
                                                 <>

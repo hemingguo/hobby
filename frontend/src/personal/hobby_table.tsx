@@ -45,23 +45,23 @@ const useStyles = makeStyles({
     column: {
         color: "	#FFA500",
         fontWeight: "bold",
-        fontFamily: "Bahnschrift", // 设置字体为 Bahnschrift
+        fontFamily: "Comic Sans MS", 
     },
     activeNumber: {
         color: "#41D800",
-        fontFamily: "Bahnschrift", // 设置字体为 Bahnschrift
+        fontFamily: "Comic Sans MS", 
     },
     totalNumber: {
         color: "#ff9de2",
-        fontFamily: "Bahnschrift", // 设置字体为 Bahnschrift
+        fontFamily: "Comic Sans MS", 
     },
     name: {
         color: "#530FAD",
-        fontFamily: "Bahnschrift", // 设置字体为 Bahnschrift
+        fontFamily: "Kaiti", 
     },
     people: {
         color: " #0B61A4",
-        fontFamily: "Bahnschrift", // 设置字体为 Bahnschrift
+        fontFamily: "Kaiti", 
 
     },
     button: {
