@@ -108,10 +108,9 @@ const Hobby_table: React.FC<HobTProps> = ({ onToggleView }) => {
     const userId = parseInt(Id, 10);
     // 获取用户加入的集合数据
     const [items, setItems] = React.useState<Item[]>([]);
-    const [userImages, setUserImages] = React.useState<{ [key: number]: string }>({});
-    const [usernames, setUsernames] = React.useState<{ [key: number]: string }>({});
+  
     const [authorsInfo, setAuthorsInfo] = React.useState<{ [key: number]: AuthorInfo }>({});
-
+    const [selectedId, setSelectedId] = React.useState<number | null>(null);
 
     React.useEffect(() => {
         const fetchCircles = async () => {
@@ -147,7 +146,7 @@ const Hobby_table: React.FC<HobTProps> = ({ onToggleView }) => {
                 if (data.status === "success") {
                     // 直接将获取的数据设置到状态中
                     const authorsInfoMap: { [key: number]: AuthorInfo } = data.data;
-                    console.log("Fetched dusers: ", JSON.stringify(authorsInfoMap, null, 2)); // 打印具体信息
+                    
                     setAuthorsInfo(authorsInfoMap);
                    
                    
@@ -162,7 +161,7 @@ const Hobby_table: React.FC<HobTProps> = ({ onToggleView }) => {
     }, [userId]);
 
     // 用户要查看的兴趣圈id
-    const [selectedId, setSelectedId] = React.useState<number | null>(null);
+    
     const handleJump = (id: number) => {
         setSelectedId(id);
         setValue(2);

@@ -127,8 +127,36 @@ const useStyles = makeStyles({
         top: "250px",
         marginLeft: "520px",
 
-    }
+    },
+    imageContainer: {
+        width: '100px', // 你可以调整这个尺寸
+        height: '100px',
+        overflow: 'hidden',
+        borderRadius: '8px', // 如果你想要圆角
+        marginTop: '20px' // 调整这个以控制图像与内容之间的距离
+    },
+    image: {
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover', // 使图像覆盖整个容器
+    },
 });
+interface Post {
+    id: number;
+    circle_id: number;
+    author_id: number;
+    imageUrl: string;
+    content: string;
+    created_at: string;
+    updated_at: string;
+    likes: number;
+    users: number[];
+}
+interface AuthorInfo {
+    userId: number;
+    image: string;
+    username: string;
+}
 
 interface ViewProps {
     onToggleView: () => void;
@@ -156,6 +184,8 @@ const View: React.FC<ViewProps> = ({ onToggleView }) => {
     const [s, setS] = React.useState(false); // 表示是否接收到数据库
     // 获取当前用户ID
     const userId = localStorage.getItem('userId') || '';
+    const [authorsInfo, setAuthorsInfo] = React.useState<{ [key: number]: AuthorInfo }>({});
+
 
     React.useEffect(() => {
         const fetchPosts = async () => {
@@ -176,10 +206,15 @@ const View: React.FC<ViewProps> = ({ onToggleView }) => {
                     const postsResponse = await fetch(`http://127.0.0.1:7001/post/circle?circle_id=${circle_id}`);
                     const postsData = await postsResponse.json();
                     if (postsResponse.ok) {
-                        console.log('Posts Data:', postsData);
+
 
                         setPosts(postsData);
 
+                        // 使用类型断言确保 authorIds 是 number[] 类型
+                        const authorIds = [...new Set(postsData.map((post: Post) => post.author_id))] as number[];
+                        fetchAuthorsInfo(authorIds);
+
+                        //点赞情况
                         setLikes(postsData.map((post: any) => post.likes));
                         setLiked(postsData.map((post: any) => post.users && post.users.includes(parseInt(userId || '0'))));
 
@@ -205,6 +240,33 @@ const View: React.FC<ViewProps> = ({ onToggleView }) => {
                 console.error('Error fetching posts:', error);
             }
         };
+        const fetchAuthorsInfo = async (authorIds: number[]) => {
+            try {
+                const response = await fetch(`http://127.0.0.1:7001/home/users`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ userIds: authorIds }),
+                });
+                const data = await response.json();
+
+                if (data.status === "success") {
+                    const authorsInfoMap: { [key: number]: AuthorInfo } = data.data;
+
+                    setAuthorsInfo(authorsInfoMap);
+                    console.log("Fetched dusers: ", JSON.stringify(authorsInfoMap, null, 2)); // 打印具体信息
+
+                } else {
+                    console.error("Failed to fetch authors info");
+                }
+            } catch (error) {
+                console.error("Error fetching authors info:", error);
+            }
+        };
+
+
+
 
         fetchPosts();
 
@@ -214,6 +276,7 @@ const View: React.FC<ViewProps> = ({ onToggleView }) => {
 
 
     const handleLikeClick = async (index: number) => {  // 点赞/取消点赞
+        console.log("Fetched dusers: ", JSON.stringify(authorsInfo, null, 2)); // 打印具体信息
         const newLikes = [...likes];
         const newLiked = [...liked];
 
@@ -354,7 +417,7 @@ const View: React.FC<ViewProps> = ({ onToggleView }) => {
                                         <CardHeader
                                             image={
                                                 <img
-                                                    src={post.imageUrl}
+                                                    src={authorsInfo[post.author_id]?.image}
                                                     height={50}
                                                     width={50}
                                                     alt="Profile"
@@ -362,7 +425,7 @@ const View: React.FC<ViewProps> = ({ onToggleView }) => {
                                             }
                                             header={
                                                 <Body1>
-                                                    <b className={classes.name}>{post.author_id}</b>
+                                                    <b className={classes.name}>No.{post.author_id} {authorsInfo[post.author_id]?.username}</b>
                                                 </Body1>
                                             }
                                             description={<Caption1 className={classes.des}>{post.created_at}</Caption1>}
@@ -370,6 +433,9 @@ const View: React.FC<ViewProps> = ({ onToggleView }) => {
 
                                         <CardPreview className={classes.main}>
                                             {post.content}
+                                            <div className={classes.imageContainer}>
+                                                <img src={post.imageUrl} alt="Post Image" className={classes.image} />
+                                            </div>
                                         </CardPreview >
 
                                         <CardFooter>

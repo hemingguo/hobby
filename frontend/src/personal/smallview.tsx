@@ -124,10 +124,37 @@ const useStyles = makeStyles({
         top: "320px",
         marginLeft: "365px",
 
-    }
+    },
+    imageContainer: {
+        width: '100px', // 你可以调整这个尺寸
+        height: '100px',
+        overflow: 'hidden',
+        borderRadius: '8px', // 如果你想要圆角
+        marginTop: '30px' // 调整这个以控制图像与内容之间的距离
+    },
+    image: {
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover', // 使图像覆盖整个容器
+    },
 });
 
-
+interface Post {
+    id: number;
+    circle_id: number;
+    author_id: number;
+    imageUrl: string;
+    content: string;
+    created_at: string;
+    updated_at: string;
+    likes: number;
+    users: number[];
+}
+interface AuthorInfo {
+    userId: number;
+    image: string;
+    username: string;
+}
 
 interface ViewProps {
     onToggleView: () => void;
@@ -150,48 +177,84 @@ const View: React.FC<ViewProps> = ({ onToggleView, id }) => {
     const [dialogOpenIndex, setDialogOpenIndex] = React.useState<number | null>(null);
     const [currentComment, setCurrentComment] = React.useState<string>("");// 当前输入的评论
     const [commentCounts, setCommentCounts] = React.useState<number[]>([]);
-
-    const [circleName, setCircleName] = React.useState<string | null>(localStorage.getItem('circle_name') || '');
     const [posts, setPosts] = React.useState<any[]>([]); // 用于存储帖子数据
     const [s, setS] = React.useState(false); // 表示是否接收到数据库
     // 获取当前用户ID
     const userId = localStorage.getItem('userId') || '';
+    const [authorsInfo, setAuthorsInfo] = React.useState<{ [key: number]: AuthorInfo }>({});
 
     React.useEffect(() => {
         const fetchPosts = async () => {
             try {
-                // 根据 circle_id 获取帖子数据
-                const postsResponse = await fetch(`http://127.0.0.1:7001/post/circle?circle_id=${circle_id}`);
-                const postsData = await postsResponse.json();
-                if (postsResponse.ok) {
-                    console.log('Posts Data:', postsData);
+                    // 根据 circle_id 获取帖子数据
+                    const postsResponse = await fetch(`http://127.0.0.1:7001/post/circle?circle_id=${circle_id}`);
+                    const postsData = await postsResponse.json();
+                    if (postsResponse.ok) {
 
-                    setPosts(postsData);
 
-                    setLikes(postsData.map((post: any) => post.likes));
-                    setLiked(postsData.map((post: any) => post.users && post.users.includes(parseInt(userId || '0'))));
+                        setPosts(postsData);
 
-                    // 统计每个帖子的评论数量
-                    const commentCountsArray = await Promise.all(postsData.map(async (post: any) => {
-                        const countResponse = await fetch(`http://127.0.0.1:7001/comment/count?postId=${post.id}`);
-                        const countData = await countResponse.json();
-                        return countData;
-                    }));
-                    setCommentCounts(commentCountsArray);
+                        // 使用类型断言确保 authorIds 是 number[] 类型
+                        const authorIds = [...new Set(postsData.map((post: Post) => post.author_id))] as number[];
+                        fetchAuthorsInfo(authorIds);
 
-                    // 初始化评论
-                    setComments(new Array(postsData.length).fill([]));
-                    setS(true)
+                        //点赞情况
+                        setLikes(postsData.map((post: any) => post.likes));
+                        setLiked(postsData.map((post: any) => post.users && post.users.includes(parseInt(userId || '0'))));
+
+                        // 统计每个帖子的评论数量
+                        const commentCountsArray = await Promise.all(postsData.map(async (post: any) => {
+                            const countResponse = await fetch(`http://127.0.0.1:7001/comment/count?postId=${post.id}`);
+                            const countData = await countResponse.json();
+                            return countData;
+                        }));
+                        setCommentCounts(commentCountsArray);
+
+                        // 初始化评论
+                        setComments(new Array(postsData.length).fill([]));
+                        setS(true);
+
+                    } else {
+                        console.error('Failed to fetch posts:', postsData.message);
+                    }
+                
+            } catch (error) {
+                console.error('Error fetching posts:', error);
+            }
+        };
+        const fetchAuthorsInfo = async (authorIds: number[]) => {
+            try {
+                const response = await fetch(`http://127.0.0.1:7001/home/users`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ userIds: authorIds }),
+                });
+                const data = await response.json();
+
+                if (data.status === "success") {
+                    const authorsInfoMap: { [key: number]: AuthorInfo } = data.data;
+
+                    setAuthorsInfo(authorsInfoMap);
+                    console.log("Fetched dusers: ", JSON.stringify(authorsInfoMap, null, 2)); // 打印具体信息
+
                 } else {
-                    console.error('Failed to fetch posts:', postsData.message);
+                    console.error("Failed to fetch authors info");
                 }
             } catch (error) {
-                console.error("error!")
+                console.error("Error fetching authors info:", error);
             }
-        }
+        };
+
+
+
 
         fetchPosts();
-    }, [circleName]);
+
+
+
+    }, []);
 
     const handleLikeClick = async (index: number) => {  // 点赞/取消点赞
         const newLikes = [...likes];
@@ -335,7 +398,7 @@ const View: React.FC<ViewProps> = ({ onToggleView, id }) => {
                                             <CardHeader
                                                 image={
                                                     <img
-                                                        src={post.imageUrl}
+                                                        src={authorsInfo[post.author_id]?.image}
                                                         height={50}
                                                         width={50}
                                                         alt="Profile"
@@ -343,7 +406,7 @@ const View: React.FC<ViewProps> = ({ onToggleView, id }) => {
                                                 }
                                                 header={
                                                     <Body1>
-                                                        <b className={classes.name}>{post.author_id}</b>
+                                                        <b className={classes.name}>No.{post.author_id} {authorsInfo[post.author_id]?.username}</b>
                                                     </Body1>
                                                 }
                                                 description={<Caption1 className={classes.des}>{post.created_at}</Caption1>}
@@ -351,6 +414,9 @@ const View: React.FC<ViewProps> = ({ onToggleView, id }) => {
 
                                             <CardPreview className={classes.main}>
                                                 {post.content}
+                                                <div className={classes.imageContainer}>
+                                                    <img src={post.imageUrl} alt="Post Image" className={classes.image} />
+                                                </div>
                                             </CardPreview >
 
                                             <CardFooter>

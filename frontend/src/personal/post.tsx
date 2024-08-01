@@ -199,7 +199,18 @@ const useStyles = makeStyles({
 });
 
 
-
+interface Item {
+    _id: string;
+    id: number;
+    name: string;
+    author_id: number;
+    description: string;
+    created_at: string;
+    updated_at: string;
+    users: number[];
+    imageUrl: string;
+    __v: number;
+}
 
 const Pos = () => {
     const classes = useStyles();
@@ -207,25 +218,24 @@ const Pos = () => {
     const fileInputRef = React.useRef<HTMLInputElement>(null);
     const [avatar, setAvatar] = React.useState<string | null>(null);
     const [value, setValue] = React.useState("");
-    const [circleNames, setCircleNames] = React.useState<string[]>([]);
+ 
     const [selectedCircle, setSelectedCircle] = React.useState<string>('');
+    const Id = localStorage.getItem("userId") || '';
+    const userId = parseInt(Id, 10);
 
-
+    // 获取用户加入的集合数据
+    const [items, setItems] = React.useState<Item[]>([]);
     useEffect(() => {
         // Fetch circle names from the backend
         const fetchCircleNames = async () => {
             try {
-
-                const response = await fetch('http://127.0.0.1:7001/circle/names');
+                
+                const response = await fetch(`http://127.0.0.1:7001/circle/user/${userId}`);
                 const data = await response.json();
                 console.log(data);
                 if (response.ok) {
-                    // Check if data.circles is an array and map it
-                    if (Array.isArray(data.circles)) {
-                        setCircleNames(data.circles.map((circle: any) => circle.name));
-                    } else {
-                        console.error('Unexpected data structure:', data);
-                    }
+                    setItems(data.data);
+                    console.log("选择啊: ", JSON.stringify(data, null, 2)); // 打印具体信息
                 } else {
                     console.error('Failed to fetch circle names:', data.message);
                 }
@@ -235,7 +245,7 @@ const Pos = () => {
         };
 
         fetchCircleNames();
-    }, []);
+    }, [userId]);
 
 
     // 记录发帖至哪一兴趣圈
@@ -453,11 +463,15 @@ const Pos = () => {
                                         value={selectedCircle}  // 确保设置为 selectedCircle
                                     >
                                         <option value="" disabled>Select a circle</option>  // 添加默认选项
-                                        {circleNames.map((name, index) => (
-                                            <option key={index} value={name}>
-                                                {name}
-                                            </option>
-                                        ))}
+                                        {items && items.length > 0 ? (
+                                            items.map((item) => (
+                                                <option key={item.id} value={item.id}>
+                                                    {item.name}
+                                                </option>
+                                            ))
+                                        ) : (
+                                            <option value="" disabled>No circles available</option>
+                                        )}
                                     </Select>
                                 </div>
 
