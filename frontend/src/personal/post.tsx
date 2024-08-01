@@ -27,6 +27,7 @@ import {
 
 const useStyles = makeStyles({
     title: {
+        fontFamily: "Comic Sans MS", 
         fontSize: "2em",
         fontWeight: "bold",
         color: "rgb(148, 235, 17)",
@@ -465,7 +466,7 @@ const Pos = () => {
                                         <option value="" disabled>Select a circle</option>  // 添加默认选项
                                         {items && items.length > 0 ? (
                                             items.map((item) => (
-                                                <option key={item.id} value={item.id}>
+                                                <option key={item.id} value={item.name}>
                                                     {item.name}
                                                 </option>
                                             ))

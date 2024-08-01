@@ -27,6 +27,7 @@ const useStyles = makeStyles({
         boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
     },
     title: {
+        fontFamily: "Comic Sans MS", 
         fontSize: "2em",
         fontWeight: "bold",
         color: "rgb(148, 235, 17)",

@@ -113,4 +113,12 @@ export class CircleController {
             data: count,
         };
     }
+
+    @Get('/activeUserCount')
+    async getActiveUserCount(@Query('circle_id') circle_id: number) {
+        
+        const count = await this.circleService.fetchActiveUserCount(circle_id);
+        console.log("dasfasdfsadfsda"+count)
+        return { count };
+    }
 }

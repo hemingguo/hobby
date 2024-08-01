@@ -43,7 +43,7 @@ const Dia: React.FC<DiaProps> = ({ circle_id }) => {
                     action={
                         <ToastTrigger>
                             <Button appearance="transparent" size="small">
-                                Close
+                                <div >Close</div>
                             </Button>
                         </ToastTrigger>
                     }
@@ -97,7 +97,7 @@ const Dia: React.FC<DiaProps> = ({ circle_id }) => {
         <>
             <Dialog>
                 <DialogTrigger disableButtonEnhancement>
-                    <Button appearance="subtle" icon={<ArrowSquareUpRightRegular fontSize={20} />}>Join</Button>
+                    <Button appearance="subtle" icon={<ArrowSquareUpRightRegular fontSize={20} />}><div style={{ fontFamily: 'Comic Sans MS' }}>Join</div></Button>
                 </DialogTrigger>
                 <DialogSurface>
 

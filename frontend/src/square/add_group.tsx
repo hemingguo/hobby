@@ -27,6 +27,7 @@ const useStyles = makeStyles({
         borderRadius: "10px",
     },
     title: {
+        fontFamily: "Comic Sans MS", 
         fontSize: "2em",
         fontWeight: "bold",
         color: "rgb(148, 235, 17)",

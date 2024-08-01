@@ -111,7 +111,7 @@ const Hobby_table: React.FC<HobTProps> = ({ onToggleView }) => {
   
     const [authorsInfo, setAuthorsInfo] = React.useState<{ [key: number]: AuthorInfo }>({});
     const [selectedId, setSelectedId] = React.useState<number | null>(null);
-
+    const [activeUserCounts, setActiveUserCounts] = React.useState<{ [key: number]: number }>({});
     React.useEffect(() => {
         const fetchCircles = async () => {
             try {
@@ -123,7 +123,7 @@ const Hobby_table: React.FC<HobTProps> = ({ onToggleView }) => {
                     const authorIds = data.data.map((item: Item) => item.author_id);
 
                     fetchAuthorsInfo(authorIds);
-
+                    fetchActiveUserCounts(data.data.map((item: Item) => item.id));
                 } else {
                     console.error("Failed to fetch circles");
                 }
@@ -132,6 +132,7 @@ const Hobby_table: React.FC<HobTProps> = ({ onToggleView }) => {
             }
         };
 
+        //获取兴趣圈的作者信息
         const fetchAuthorsInfo = async (authorIds: number[]) => {
             try {
                 const response = await fetch(`http://127.0.0.1:7001/home/users`, {
@@ -157,6 +158,26 @@ const Hobby_table: React.FC<HobTProps> = ({ onToggleView }) => {
                 console.error("Error fetching authors info:", error);
             }
         };
+
+        // 获取每个圈子的活跃人数
+        const fetchActiveUserCounts = async (circleIds: number[]) => {
+            try {
+                const counts = await Promise.all(circleIds.map(async (circleId) => {
+                    const response = await fetch(`http://127.0.0.1:7001/circle/activeUserCount?circle_id=${circleId}`);
+                    const data = await response.json();
+                    return { circleId, count: data.count };
+                }));
+                const countsMap = counts.reduce((acc: { [key: number]: number }, item) => {
+                    acc[item.circleId] = item.count;
+                    return acc;
+                }, {});
+                console.log('aaaaaa:', JSON.stringify(countsMap, null, 2));
+                setActiveUserCounts(countsMap);
+            } catch (error) {
+                console.error("Error fetching active user counts:", error);
+            }
+        };
+
         fetchCircles();
     }, [userId]);
 
@@ -270,7 +291,7 @@ const Hobby_table: React.FC<HobTProps> = ({ onToggleView }) => {
                                 </TableCell>
 
                                 <TableCell tabIndex={0} role="gridcell" className={classes.activeNumber}>
-                                    {3}
+                                    {activeUserCounts[item.id]}
                                 </TableCell>
 
                                 <TableCell role="gridcell" tabIndex={0} {...focusableGroupAttr}>

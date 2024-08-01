@@ -264,10 +264,11 @@ const Per: React.FC = () => {
                                 width={100}
                                 shape="circular"
                                 src={imageUrl}
+                                
                             />
                         </div>
                         <div className={classes.title}>
-                            ~~ Personal Page ~~
+                            <div style={{ fontFamily: 'Comic Sans MS, sans-serif' }}>~~ Personal Page ~~</div>
                         </div>
                         <div className={classes.table}>
                             <table className={classes.tableElement}>

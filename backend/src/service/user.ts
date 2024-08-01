@@ -57,4 +57,10 @@ export class UserRL {
 
         return usersInfoMap;
     }
+
+
+    async getUsernameById(author_id: number): Promise<string | null> {
+        const user = await this.userModel.findOne({ id: author_id }).exec();
+        return user ? user.username : null;
+    }
 }

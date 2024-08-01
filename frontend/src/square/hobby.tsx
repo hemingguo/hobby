@@ -41,24 +41,27 @@ const useStyles = makeStyles({
         },
     },
     describe: {
-        fontFamily: "Bahnschrift", // 设置字体为 Bahnschrift
+        fontFamily: "KaiTi",
         paddingLeft: "20px",
         paddingRight: "20px",
         color: "grey"
     },
     title: {
-
+        fontFamily:"KaiTi",
         color: "#FFAA00"
     },
     des: {
-        fontFamily: "Bahnschrift", // 副标题设置字体为 Bahnschrift
+        fontFamily: "Comic Sans MS", 
         color: "#756c83",
 
     },
     desx: {
-        fontFamily: "Bahnschrift", // 副标题设置字体为 Bahnschrift
+        fontFamily: "Georgia",
         color: "#756c83",
         fontSize: '10px', // 副标题的字体大小，调小一点
+    },
+    look:{
+        fontFamily: "Comic Sans MS", 
     }
 
 });
@@ -72,12 +75,38 @@ interface HobProps {
     created: string;
     updated: string;
     imageUrl: string;
-    circle_id : number;
+    circle_id: number;
 
 }
 
 const Hob: React.FC<HobProps> = ({ circle_id, title, author_id, description, created, updated, imageUrl, onToggleView }) => {
     const styles = useStyles();
+    const [username, setUsername] = React.useState('');
+
+    React.useEffect(() => {
+        const fetchUsername = async () => {
+            try {
+                const response = await fetch('http://127.0.0.1:7001/home/getUsername', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ author_id })
+                });
+                const res = await response.json();
+
+                if (response.ok) {
+                    setUsername(res.username || '');
+                } else {
+                    console.error('Error fetching username:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error fetching username:', error);
+            }
+        };
+
+        fetchUsername();
+    }, [author_id]);
 
     const handleClick = () => {
         localStorage.removeItem('circle_name');  // 移除存储的
@@ -100,8 +129,8 @@ const Hob: React.FC<HobProps> = ({ circle_id, title, author_id, description, cre
                     </Body1>
                 }
                 description={<Caption1 >
-                    <span className={styles.des}>Founded by {author_id} in {created}</span><br />
-                    <span className={styles.desx}>Updated at {updated}</span>
+                    <span className={styles.des}>Founded by No.{author_id} {username ? username : ""} </span><br />
+                    <span className={styles.desx}>Created at {created}</span>
                 </Caption1>}
             />
 
@@ -113,9 +142,9 @@ const Hob: React.FC<HobProps> = ({ circle_id, title, author_id, description, cre
 
             <CardFooter>
 
-                <Button onClick={handleClick} appearance="subtle" icon={<SendRegular fontSize={16} />}>Look</Button>
+                <Button onClick={handleClick} appearance="subtle" icon={<SendRegular fontSize={16} />}><div className={styles.look}>Look</div></Button>
 
-                <Dia circle_id = {circle_id}/>
+                <Dia circle_id={circle_id} />
             </CardFooter>
         </Card>
     );
