@@ -41,7 +41,20 @@ export class UserRL {
         return user ? user.image : null;
     }
 
+    async getUsersInfo(userIds: number[]): Promise<{ [key: number]: { userId: number, image: string, username: string } }> {
+        const users = await this.userModel.find({ id: { $in: userIds } }, 'id image username').lean().exec();
 
+        // 创建一个以 userId 为键的对象
+        const usersInfoMap: { [key: number]: { userId: number, image: string, username: string } } = {};
 
+        users.forEach(user => {
+            usersInfoMap[user.id] = {
+                userId: user.id,
+                image: user.image,
+                username: user.username
+            };
+        });
 
+        return usersInfoMap;
+    }
 }

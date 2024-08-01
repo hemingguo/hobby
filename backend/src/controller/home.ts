@@ -27,4 +27,17 @@ export class HomeController {
             return { status: 'error', message: 'User not found' };
         }
     }
+    @Post('/users')
+    async getUsersInfo(@Body() body: { userIds: number[] }) {
+        
+        
+        const usersInfo = await this.userService.getUsersInfo(body.userIds);
+        
+        
+        return {
+            status: 'success',
+            data: usersInfo,
+        };
+    }
+
 }
