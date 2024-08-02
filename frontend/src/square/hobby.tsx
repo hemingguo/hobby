@@ -79,7 +79,7 @@ interface HobProps {
 
 }
 
-const Hob: React.FC<HobProps> = ({ circle_id, title, author_id, description, created, updated, imageUrl, onToggleView }) => {
+const Hob: React.FC<HobProps> = ({ circle_id, title, author_id, description, created, imageUrl, onToggleView }) => {
     const styles = useStyles();
     const [username, setUsername] = React.useState('');
 

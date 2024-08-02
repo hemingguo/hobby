@@ -179,8 +179,8 @@ const View: React.FC<ViewProps> = ({ onToggleView }) => {
     const [dialogOpenIndex, setDialogOpenIndex] = React.useState<number | null>(null);
     const [currentComment, setCurrentComment] = React.useState<string>("");// 当前输入的评论
     const [commentCounts, setCommentCounts] = React.useState<number[]>([]);
-
-    const [circleName, setCircleName] = React.useState<string | null>(localStorage.getItem('circle_name') || '');
+    const circleName = localStorage.getItem('circle_name') || '';
+    
     const [posts, setPosts] = React.useState<any[]>([]); // 用于存储帖子数据
     const [s, setS] = React.useState(false); // 表示是否接收到数据库
     // 获取当前用户ID

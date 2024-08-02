@@ -15,7 +15,7 @@ import {
     TableHeader,
     TableHeaderCell,
     TableCellLayout,
-    PresenceBadgeStatus,
+    
     Avatar,
     Button,
     useArrowNavigationGroup,

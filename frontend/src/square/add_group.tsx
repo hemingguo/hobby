@@ -284,7 +284,7 @@ const AddGroup = () => {
                         <Input
                             className={classes.input}
                             appearance="filled-lighter-shadow"
-                            onChange={(ev, data) => setName(data.value)}
+                            onChange={(_ev, data) => setName(data.value)}
                             value={name}
                         />
                     </Field>

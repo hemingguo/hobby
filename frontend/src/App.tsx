@@ -6,7 +6,7 @@ import {
   NavDrawer,
   NavDrawerBody,
   NavDrawerHeader,
-  NavDrawerProps,
+  
   NavItem,
   NavSectionHeader,
 } from "@fluentui/react-nav-preview"
@@ -95,7 +95,7 @@ const useStyles = makeStyles({
 const Personal = bundleIcon(Home32Filled, Home32Regular);
 const Square = bundleIcon(LeafTwo32Filled, LeafTwo32Regular);
 
-const NavDrawerDefault = (props: Partial<NavDrawerProps>) => {
+const NavDrawerDefault = () => {
   const styles = useStyles();
   const [page, setPage] = React.useState(2);
   const [isOpen, setIsOpen] = React.useState(false);

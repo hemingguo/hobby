@@ -13,8 +13,8 @@ export default {
   oss: {
     client: {
       region: 'oss-cn-shanghai', // 替换为你的OSS区域
-      accessKeyId: 'LTAI5tLmjbxchenKA4asvCAM', // 替换为你的AccessKeyId
-      accessKeySecret: '5EBwd4CjdqSKmV4coMJkg84QV7QLUb', // 替换为你的AccessKeySecret
+      accessKeyId: '*', // 替换为你的AccessKeyId
+      accessKeySecret: '*', // 替换为你的AccessKeySecret
       bucket: 'jxhobby', // 替换为你的Bucket名称
       endpoint: 'oss-cn-shanghai.aliyuncs.com',
       timeout: '60s',
@@ -22,7 +22,7 @@ export default {
   },
   mongoose: {
     client: {
-      uri: 'mongodb+srv://sosljsos:123321@cluster0.utoqxov.mongodb.net/hobby?retryWrites=true&w=majority&appName=Cluster0&tls=true',
+      uri: '*',
       options: {
         ssl: true,  // 确保使用SSL
         serverApi: {
@@ -43,6 +43,6 @@ export default {
   controller: {
     directories: ['src/controller'],
   },
-  
+
 
 } as MidwayConfig;
